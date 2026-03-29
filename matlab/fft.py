@@ -1,138 +1,101 @@
 import numpy as np
 
-def quantize(x, word_length=16, frac_length=15):
-    """Clamps and rounds to fixed-point integer representation."""
+def quantize(x, word_length=16, frac_length=13):
     scale = 2**frac_length
     xq = np.round(x * scale)
     min_val = -2**(word_length - 1)
     max_val = 2**(word_length - 1) - 1
-    return np.clip(xq, min_val, max_val)
+    return np.clip(xq, min_val, max_val).astype(np.int32)
 
-def fxp_mult(a, b, frac_length=15):
-    """Fixed-point multiplication: (a * b) >> frac_length"""
-    res = (a * b) // (2**frac_length)
-    return quantize(res / (2**frac_length), 16, frac_length)
+def bit_reverse_val(i, n_bits=10):
+    """Reverses the bits of an integer."""
+    return int('{:0{b}b}'.format(i, b=n_bits)[::-1], 2)
 
-def bit_reverse(x):
-    N = len(x)
-    j = 0
-    for i in range(1, N):
-        bit = N >> 1
-        while j & bit:	# if current bit = 1
-            j ^= bit
-            bit >>= 1
-        j ^= bit
-        if i < j:
-            x[i], x[j] = x[j], x[i]
-    return x
-
-def fft_1024_fixed(xr, xi, twiddle_r, twiddle_i, N=1024, word_length=16, frac_length=13):
-	# the maximum value of the butterfly can go to 1 + sqrt(2) = 2.414, 
-	# so need 2 additional bits for Q, use 3.13
-    # Inputs xr, xi are assumed to be already quantized 16-bit integers.
+def fft_1024_fixed_dif(xr, xi, twiddle_r, twiddle_i, N=1024, frac_length=13):
+    """DIF FFT: Matches Verilog Controller and DIF ALU Scaling."""
+    xr = xr.copy().astype(np.int64)
+    xi = xi.copy().astype(np.int64)
     stages = int(np.log2(N))
     
-    xr = bit_reverse(xr.copy())
-    xi = bit_reverse(xi.copy())
-    
-    # 2. FFT Stages
-    for stage in range(1, stages + 1):
-        m = 2**stage
-        m2 = m // 2
-
-        for j in range(0, m2):
-            tw_idx = j * (N // m)
-            wr = twiddle_r[tw_idx]
-            wi = twiddle_i[tw_idx]
+    # 1. DIF FFT Stages
+    for stage in range(stages):
+        stride = 512 >> stage
+        num_groups = 1 << stage
+        
+        for g in range(num_groups):
+            group_start = g * (2 * stride)
             
-            for k in range(j, N, m):
-                # Fixed-point Butterfly
-                # t_real = (xr[k+m2]*wr - xi[k+m2]*wi) >> frac_length
-                tr = (xr[k+m2] * wr - xi[k+m2] * wi) // (2**frac_length)
-                ti = (xr[k+m2] * wi + xi[k+m2] * wr) // (2**frac_length)
+            for i in range(stride):
+                idx_a = group_start + i
+                idx_b = group_start + i + stride
                 
-                # Update with scaling (divide by 2) to prevent overflow
-                xr[k+m2] = (xr[k] - tr) // 2
-                xi[k+m2] = (xi[k] - ti) // 2
-                xr[k] = (xr[k] + tr) // 2
-                xi[k] = (xi[k] + ti) // 2
-    return xr, xi
+                # Twiddle index matches: w_addr = i << stage_cnt
+                tw_idx = i << stage
+                wr = twiddle_r[tw_idx]
+                wi = twiddle_i[tw_idx]
+                
+                # --- DIF Butterfly Math (Matches your ALU) ---
+                # A' = (A + B) / 2
+                # B' = ((A - B) * W) / 2
+                
+                # Temporaries for A + B and A - B
+                sum_r, sum_i = xr[idx_a] + xr[idx_b], xi[idx_a] + xi[idx_b]
+                diff_r, diff_i = xr[idx_a] - xr[idx_b], xi[idx_a] - xi[idx_b]
+                
+                # Update A (Scaled by 2)
+                xr[idx_a] = sum_r >> 1
+                xi[idx_a] = sum_i >> 1
+                
+                # Update B (Complex Mult then Scaled by 2)
+                # Total shift = 13 (Q format) + 1 (FFT scaling) = 14
+                tr = (diff_r * wr - diff_i * wi) >> (frac_length + 1)
+                ti = (diff_r * wi + diff_i * wr) >> (frac_length + 1)
+                
+                xr[idx_b] = tr
+                xi[idx_b] = ti
+                
+    return xr.astype(np.int32), xi.astype(np.int32)
 
+# --- Configuration ---
 N = 1024
 word_length = 16
-frac_length = 13  # Corresponds to Q3.13 format
+frac_length = 13
 
-k = np.arange(N // 2) # Indices 0 to 511 for W_1024^k
+# Generate weights (N/2 = 512 factors)
+k = np.arange(N // 2)
 theta = -2 * np.pi * k / N
 twiddle_r = quantize(np.cos(theta), word_length, frac_length)
 twiddle_i = quantize(np.sin(theta), word_length, frac_length)
 
-# Generate weights file for Verilog simulation if it doesn't exist
-try:
-    np.loadtxt('weights.in', dtype=int)
-    print("weights.in already exists.")
-except (FileNotFoundError, IOError):
-    print("weights.in not found. Generating weights file.")
-    np.savetxt('weights.in', np.column_stack((twiddle_r, twiddle_i)), fmt='%d')
-    print("Saved generated weights to weights.in")
+# Generate and quantize input
+t = np.linspace(0, 1, N, endpoint=False)
+test_signal = 0.5 * np.sin(2 * np.pi * 50 * t)      + 0.1 * np.sin(2 * np.pi * 100 * t) 
+xr_in = quantize(test_signal, word_length, frac_length)
+xi_in = np.zeros(N, dtype=np.int32)
 
-try:
-    input_data = np.loadtxt('fft.in', dtype=int)
-    xr_in = input_data[:, 0]
-    xi_in = input_data[:, 1]
-    print("Read input from fft.in")
-    test_signal = None  # No float signal available for MSE comparison
-except (FileNotFoundError, IOError):
-    print("fft.in not found. Generating a test signal and creating fft.in.")
-    t = np.linspace(0, 1, N, endpoint=False)
+# Compute output
+res_r, res_i = fft_1024_fixed_dif(xr_in, xi_in, twiddle_r, twiddle_i)
 
-    # Input signal: sum of two sines
-    test_signal = 0.5 * np.sin(2 * np.pi * 50 * t) + 0.2 * np.sin(2 * np.pi * 120 * t)
-    
-    # quantize and safe to fft.in
-    xr_in = quantize(test_signal, word_length, frac_length)
-    xi_in = quantize(np.zeros(N), word_length, frac_length)
-    np.savetxt('fft.in', np.column_stack((xr_in, xi_in)), fmt='%d')
-    print("Saved generated input to fft.in")
+# Save input, weights, output in hex (16b Re, 16b Im)
+input_32bit = (xr_in.astype(np.uint32) << 16) | (xi_in.astype(np.uint32) & 0x0000FFFF)
+np.savetxt('fft.in', input_32bit, fmt='%08x')
+weights_32bit = (twiddle_r.astype(np.uint32) << 16) | (twiddle_i.astype(np.uint32) & 0x0000FFFF)
+np.savetxt('weights.in', weights_32bit, fmt='%08x')
+output_32bit = (res_r.astype(np.uint32) << 16) | (res_i.astype(np.uint32) & 0x0000FFFF)
+np.savetxt('fft.out', output_32bit, fmt='%08x')
+print("Saved packed bit-reversed FFT result to fft.in, weights.in, fft.out")
 
-# Compute the FFT using the fixed-point implementation
-res_r, res_i = fft_1024_fixed(xr_in, xi_in, twiddle_r, twiddle_i, N=N, word_length=word_length, frac_length=frac_length)
+# --- Simple analysis  ---
+# Because DIF output is bit-reversed, we must re-order to find frequencies
+mag = np.sqrt(res_r.astype(np.float64)**2 + res_i.astype(np.float64)**2)
+natural_mag = np.zeros(N)
+for i in range(N):
+    natural_mag[bit_reverse_val(i, 10)] = mag[i]
 
-# save the result to fft.out in (re, im) pairs
-np.savetxt('fft.out', np.column_stack((res_r, res_i)), fmt='%d')
-print("FFT result written to fft.out")
-
-# --- Analysis ---
-scale = 2**frac_length
-if test_signal is not None:
-    expected = np.fft.fft(test_signal) / N
-    res_fixed_complex = (res_r + 1j * res_i) / scale
-    res_float_complex = expected
-    errors = np.abs(res_fixed_complex - res_float_complex)**2
-    mse = np.mean(errors)
-    print(f"MSE (vs float FFT): {mse}")
-
-# simple script to find the maximum values
-mag = np.sqrt(res_r**2 + res_i**2)
-top_indices = np.argsort(mag)[-10:][::-1]
-
-print(f"{'Rank':<5} | {'Index (Hz)':<10} | {'Raw Mag':<10} | {'Scaled Mag':<12}")
-print("-" * 45)
-
-count = 1
-seen_freqs = set()
-
-# print top 5 freqs
+top_indices = np.argsort(natural_mag)[-5:][::-1]
+print(f"\nTop Peaks (Natural Order):")
 for idx in top_indices:
-    # FFT is symmetric; index k and N-k are the same frequency
-    freq = idx if idx <= 512 else 1024 - idx
-    if freq not in seen_freqs and count <= 5:
-        raw_val = mag[idx]
-        scaled_val = raw_val / scale
-        
-        print(f"{count:<5} | {idx:<10} | {raw_val:<10.1f} | {scaled_val:<12.4f}")
-        
-        seen_freqs.add(freq)
-        count += 1
+    print(f"Freq: {idx} Hz | Raw Mag: {natural_mag[idx]:.1f}")
 
-print("\nFor the generated test signal, expected peaks are at 50 Hz and 120 Hz.")
+
+# TODO: compute MSE

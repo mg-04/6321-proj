@@ -7,19 +7,16 @@ module fft (
 	input [9:0] daddr,
 	input signed [31:0] cin,
 	output reg done,
-	output reg [31:0] dout
+	output [31:0] dout  // directly wired to sram output
 );
 
 	// control states
 	localparam IDLE   = 4'd0,
-
-               FETCH  = 4'd1,
+               FETCH  = 4'd1,		// fetch, wait, write, next cycle
                WAIT   = 4'd2,
                WRITE  = 4'd3,
-
                NEXT   = 4'd4,
                DONE   = 4'd5,
-			   
 			   CLOAD      = 4'd6,
 			   DLOAD      = 4'd7,
 			   DREAD      = 4'd8,
@@ -40,6 +37,8 @@ module fft (
 	wire [9:0] i = bf_cnt % stride;
 	wire [9:0] group_start = (bf_cnt / stride) * (2 * stride);	// address offset for the current butterfly group
 
+    reg [31:0] cin_reg;
+
 
 
 	// data memory
@@ -47,7 +46,7 @@ module fft (
 	wire [31:0] alu_out_X0, alu_out_X1; // Outputs from ALU
 
 	// Mux for SRAM data input during DLOAD mode
-	wire [31:0] sram_din1 = (state == DLOAD) ? cin : alu_out_X0;
+	wire [31:0] sram_din1 = (state == DLOAD) ? cin_reg : alu_out_X0;
 
 	sram_wrapper02 data_mem (
 		.clk(clk),
@@ -61,21 +60,24 @@ module fft (
 		.dout2(x1_data)
 	);
 
+    assign dout = (state == DREAD_WAIT || state == DREAD) ? x0_data : 32'h0;
+
 	// weight memory
 	wire [31:0] twiddle_data;       // Output to ALU
 
-	wire [31:0] load_w_data = cin;	// for cload mode
+	wire [31:0] load_w_data = cin_reg;	// for cload mode
 	sram_wrapper01 weight_mem (
 		.clk(clk),
 		.cen(weight_cen),           // Always 0 during FFT
 		.gwen(weight_gwen),         // 1 during FFT, 0 during Loading
 		.addr(w_addr), 
 		.din(load_w_data), 
-		.dout(twiddle_data), 
+		.dout(twiddle_data)
 	);
 
 	alu butterfly_unit (
 		// data input read from sram
+		.clk(clk),
 		.x0r(x0_data[31:16]), .x0i(x0_data[15:0]),
 		.x1r(x1_data[31:16]), .x1i(x1_data[15:0]),
 
@@ -98,8 +100,10 @@ module fft (
 			data_gwen <= 1;
 			weight_cen <= 1;
 			weight_gwen <= 1;
-			dout <= 0;
+			// dout <= 0;
+            cin_reg <= 0;
 		end else begin
+            cin_reg <= cin;
 			case (state)
 				IDLE: begin
 					done <= 0;
@@ -126,6 +130,7 @@ module fft (
 					data_gwen <= 1;
 					addr_a <= group_start + i;
 					addr_b <= group_start + i + stride;
+
 					// read from weight memory
 					weight_cen <= 0;
 					// weight_gwen is already set to 1 (read mode)
@@ -197,7 +202,7 @@ module fft (
 				end
 
 				DREAD_WAIT: begin
-					dout <= x0_data; // Latch output
+					// dout <= x0_data; // Latch output
 					// If dread is still high, start a new read, otherwise go idle
 					state <= dread ? DREAD : IDLE;
 				end
