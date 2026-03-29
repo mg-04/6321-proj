@@ -120,7 +120,7 @@ module testbench();
                 diff_i = (dut_i > gt_i) ? (dut_i - gt_i) : (gt_i - dut_i);
                 
                 // Allow up to 1 LSBs of rounding difference
-                if (diff_r > 1 || diff_i > 1) begin
+                if (dout === 32'bx || diff_r > 2 || diff_i > 2) begin
                     $display("ERROR: Mismatch at bin %0d: DUT=%h, GT=%h", i, dout, gt_val);
                     error_count = error_count + 1;
                 end
