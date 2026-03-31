@@ -56,8 +56,10 @@ module fft (
 
 	sram_wrapper02 data_mem (
 		.clk(clk),
-		.cen(data_cen),             // Controlled by FSM
-		.gwen(data_gwen),           // 1 for Read, 0 for Write
+		.cen1(data_cen),             // Controlled by FSM
+		.cen2(state == DLOAD ? 1'b1 : data_cen),	// only load from port 1
+		.gwen1(data_gwen),           // 1 for Read, 0 for Write
+		.gwen2(state == DLOAD ? 1'b1 : data_gwen),
 		.addr1(actual_addr_a), 
 		.addr2(actual_addr_b),
 		.din1(sram_din1), 
@@ -84,8 +86,8 @@ module fft (
 		.wr(twiddle_data[31:16]), .wi(twiddle_data[15:0]),
 
 		// result writeback
-		.X0r(alu_out_X0[31:16]), .X0i(alu_out_X0[15:0]),
-		.X1r(alu_out_X1[31:16]), .X1i(alu_out_X1[15:0])
+		.X0r0(alu_out_X0[31:16]), .X0i0(alu_out_X0[15:0]),
+		.X1r0(alu_out_X1[31:16]), .X1i0(alu_out_X1[15:0])
 	);
 
 	// control FSM

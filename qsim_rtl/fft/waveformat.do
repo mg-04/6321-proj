@@ -24,16 +24,16 @@ add wave -noupdate /testbench/dut/bf_cnt
 add wave -divider "Data Memory Interface"
 add wave -noupdate /testbench/dut/data_cen
 add wave -noupdate /testbench/dut/data_gwen
-add wave -noupdate -radix hex /testbench/dut/addr_a
-add wave -noupdate -radix hex /testbench/dut/addr_b
+add wave -noupdate -radix hex /testbench/dut/actual_addr_a
+add wave -noupdate -radix hex /testbench/dut/actual_addr_b
 add wave -noupdate -radix hex /testbench/dut/x0_data
 add wave -noupdate -radix hex /testbench/dut/x1_data
 
 add wave -divider "Weight Memory Interface"
 add wave -noupdate /testbench/dut/weight_cen
 add wave -noupdate /testbench/dut/weight_gwen
-add wave -noupdate -radix hex /testbench/dut/waddr
-add wave -noupdate -radix hex /testbench/dut/load_w_data
+add wave -noupdate -radix hex /testbench/dut/actual_w_addr
+add wave -noupdate -radix hex /testbench/dut/cin
 add wave -noupdate -radix hex /testbench/dut/twiddle_data
 
 add wave -divider "ALU Interface"

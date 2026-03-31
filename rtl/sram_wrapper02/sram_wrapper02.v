@@ -8,8 +8,10 @@ module sram_wrapper02 # (
     parameter AW = 10	// 1024-point
 ) (
     input clk,
-    input cen,				// chip enable
-    input gwen,				// global write enable
+    input cen1,				// chip enable
+    input cen2,
+    input gwen1,				// global write enable
+    input gwen2,
     input [AW-1:0] addr1,
     input [AW-1:0] addr2,
     input [DW-1:0] din1,
@@ -22,16 +24,16 @@ module sram_wrapper02 # (
 	wire cen1_d, gwen1_d;
     wire [AW-1:0] addr1_d;
     wire [DW-1:0] din1_d;
-    assign `DELAY cen1_d   = cen;
-    assign `DELAY gwen1_d  = gwen;
+    assign `DELAY cen1_d   = cen1;
+    assign `DELAY gwen1_d  = gwen1;
     assign `DELAY addr1_d  = addr1;
     assign `DELAY din1_d   = din1;
 
     wire cen2_d, gwen2_d;
     wire [AW-1:0] addr2_d;
     wire [DW-1:0] din2_d;
-    assign `DELAY cen2_d   = cen;
-    assign `DELAY gwen2_d  = gwen;
+    assign `DELAY cen2_d   = cen2;
+    assign `DELAY gwen2_d  = gwen2;
     assign `DELAY addr2_d  = addr2;
     assign `DELAY din2_d   = din2;
 
@@ -50,7 +52,6 @@ module sram_wrapper02 # (
         .QA(w_dout_a),
         .EMAA(3'b000),       // Extra Margin Adjustment A
 
-        // --- PORT B (Tied to Idle) ---
         .CLKB(clk),
         .CENB(cen2_d),
         .GWENB(gwen2_d),

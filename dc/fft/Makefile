@@ -37,5 +37,9 @@ clean:
 	rm -rf *.svf
 	rm -rf *.nl.v
 	rm -rf *.rpt
-	rm -rf *.syn.*
+	rm -rf *.syn*
 	rm -rf .cadence
+	rm -rf *.pvl
+	rm -rf *.nl.PG.v
+	rm -rf *.mr
+

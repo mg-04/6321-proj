@@ -8,9 +8,9 @@ vmap work work
 
 # Include Netlist and Testbench
 vlog +acc -incr ../../rtl/alu/alu.v
-vlog +acc -incr ../../rtl/sram_wrapper01/sram01.v
+vlog +acc -incr ../../memory_compiler/sram01/sram01.v
 vlog +acc -incr ../../rtl/sram_wrapper01/sram_wrapper01.v
-vlog +acc -incr ../../rtl/sram_wrapper02/sram02.v
+vlog +acc -incr ../../memory_compiler/sram02/sram02.v
 vlog +acc -incr ../../rtl/sram_wrapper02/sram_wrapper02.v
 vlog +acc -incr ../../rtl/fft/fft.v 
 vlog +acc -incr test_fft.v 

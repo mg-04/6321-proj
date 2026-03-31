@@ -1,10 +1,11 @@
 # --- Variables ---
 # Path to the SRAM compiler binary
-COMPILER = /tools/misc/EE6321/arm/tsmc/cln65gplus/sram_dp_hdc_svt_rvt_hvt/r0p1/bin/sram_dp_hdc_svt_rvt_hvt
+COMPILER = /tools/misc/EE6321/arm/tsmc/cln65gplus/sram_sp_hdc_svt_rvt_hvt/r0p0-00eac0/bin/sram_sp_hdc_svt_rvt_hvt
 
 # SRAM Instance Configuration
 INST_NAME = sram01
-WORDS     = 1024
+OUT_DIR   = sram01_libs
+WORDS     = 512
 BITS      = 32
 FREQ      = 100
 MUX       = 8
@@ -27,11 +28,14 @@ all: sram db
 
 # Equivalent to run.sh: Generates all SRAM views
 sram:
+	mkdir -p $(OUT_DIR)
 	$(COMPILER) verilog $(FLAGS)
 	$(COMPILER) synopsys $(FLAGS)
 	$(COMPILER) lvs $(FLAGS)
 	$(COMPILER) vclef-fp $(FLAGS)
 	$(COMPILER) gds2 $(FLAGS)
+	@echo "Moving generated files to $(OUT_DIR)..."
+	mv $(INST_NAME)*.lib $(OUT_DIR)/
 
 # Equivalent to gen_db.sh: Converts .lib to .db using Library Compiler
 db:
