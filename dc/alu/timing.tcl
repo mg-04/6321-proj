@@ -6,7 +6,7 @@
 # Setting variables
 # FO4 delay of the technology in nanosecond
 set fo4 0.02
-set clk_period [expr 500*$fo4]    # 100 MHz
+set clk_period [expr 50*$fo4]    # 1 GHz
 
 # Used as setup/hold check pessimism margin, please adjust as needed
 set clk_uncertainty [expr 5*$fo4] 

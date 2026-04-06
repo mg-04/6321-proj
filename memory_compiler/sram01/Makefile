@@ -7,7 +7,7 @@ INST_NAME = sram01
 OUT_DIR   = sram01_libs
 WORDS     = 512
 BITS      = 32
-FREQ      = 100
+FREQ      = 1000
 MUX       = 8
 
 # Common flags used for all views
