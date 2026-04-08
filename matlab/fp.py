@@ -3,8 +3,8 @@
 import numpy as np
 import os
 
-IN_FILE = 'c/fft_all_tests.in'
-OUT_FILE = 'c/fft_all_tests.out'
+IN_FILE = "FFT_input/input_q1_15_v3.hex"
+OUT_FILE = "FFT_input/output_q1_15.hex"
 
 def bit_reverse(n, bits=10):
     """Reverses the bits of an integer n."""
@@ -14,10 +14,27 @@ def bit_reverse(n, bits=10):
         n >>= 1
     return res
 
-def hex_to_complex(hex_str, frac_bits=13):
+def hex_to_real(hex_str, frac_bits=15):
+    """
+    Helper function to parse the HEX HW input
+    Converts 16-bit hex (RRRR) to a complex float in Q1.15
+    """
+    val = int(hex_str, 16)
+    
+    r_int = val
+    i_int = 0
+    
+    if r_int >= 0x8000: r_int -= 0x10000
+    if i_int >= 0x8000: i_int -= 0x10000
+    
+    # Convert to float (Divide by 2^frac_bits)
+    scale = 2.0**frac_bits
+    return complex(r_int / scale, i_int / scale)
+
+def hex_to_complex(hex_str, frac_bits=15):
     """
     Helper function to parse the HEX HW output
-    Converts 32-bit hex (RRRRIIII) to a complex float in Q3.13
+    Converts 32-bit hex (RRRRIIII) to a complex float in Q1.15
     """
     val = int(hex_str, 16)
     
@@ -53,7 +70,7 @@ def compute_fft_mse(in_file, out_file, n_points=1024):
         start_idx = t * n_points
         end_idx = (t + 1) * n_points
         
-        hw_in = np.array([hex_to_complex(h) for h in in_hex[start_idx:end_idx]])
+        hw_in = np.array([hex_to_real(h) for h in in_hex[start_idx:end_idx]])
         hw_out_raw = np.array([hex_to_complex(h) for h in out_hex[start_idx:end_idx]])
 
         # reorder HW output from hardware bit-reversed indices to natural indices
@@ -63,7 +80,22 @@ def compute_fft_mse(in_file, out_file, n_points=1024):
 
         # fp golden model
         # np.fft.fft() * (1/2)^10 due to ALU shifting in my block
-        sw_gold = np.fft.fft(hw_in) / n_points
+        sw_gold = np.fft.fft(hw_in) / (2 ** 8)
+
+        # --- Q9.7 Overflow Check ---
+        max_q9_7 = 255.992
+        min_q9_7 = -256.0
+        
+        # Check Real and Imaginary parts separately
+        real_overflows = np.sum((sw_gold.real > max_q9_7) | (sw_gold.real < min_q9_7))
+        imag_overflows = np.sum((sw_gold.imag > max_q9_7) | (sw_gold.imag < min_q9_7))
+        
+        if real_overflows > 0 or imag_overflows > 0:
+            peak_real = np.max(np.abs(sw_gold.real))
+            peak_imag = np.max(np.abs(sw_gold.imag))
+            print(f"  [!] TEST {t}: GOLDEN MODEL OVERFLOW DETECTED")
+            print(f"      Peak Magnitude found: Real={peak_real:.2f}, Imag={peak_imag:.2f}")
+            print(f"      (Q9.7 limit is +/- 256.0)")
 
         # calculate MSE for each case
         errors = np.abs(hw_out_ordered - sw_gold)**2

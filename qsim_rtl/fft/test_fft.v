@@ -2,14 +2,15 @@
 `define SD #0.010
 `define HALF_CLOCK_PERIOD #0.5   // 1 GHz Clock
 `define QSIM_OUT_FN "./qsim_fft.out"
-`define TWIDDLE_FN  "../../matlab/c/weights.in" // 512 entries (all in 32-bit hex)
-`define INPUT_FN    "../../matlab/c/fft_all_tests.in"   // 1024 entries x 1024
-`define GOLDEN_FN   "../../matlab/c/fft_all_tests.out" // 1024 entries x 1024
+`define TWIDDLE_FN  "../../matlab/FFT_input/twiddle_q15.hex" // 512 entries (all in 32-bit hex)
+`define INPUT_FN    "../../matlab/FFT_input/input_q1_15_v3.hex"   // 1024 entries x 10
+`define GOLDEN_FN   "../../matlab/FFT_input/output_q1_15.hex" // 1024 entries x 10
+`define ALU_DEBUG_FN "alu_trace.txt"
 
 module testbench();
     parameter N_POINTS = 1024;
     parameter W_POINTS = 512;
-    parameter N_TESTS = 1024;
+    parameter N_TESTS = 10;
 
     reg clk, rst, start;
     reg cload, dload, dread;
@@ -32,6 +33,7 @@ module testbench();
         .clk(clk), .rst(rst), .start(start),
         .cload(cload), .dload(dload), .dread(dread),
         .caddr(caddr), .daddr(daddr), .cin(cin),
+        .scale_mask(10'b1111001111),
         .done(done), .dout(dout)
     );
 
@@ -81,7 +83,7 @@ module testbench();
                 scan_ret = $fscanf(input_file, "%h\n", val_in);
                 @(negedge clk);
                 daddr <= i[9:0];
-                cin   <= val_in;
+                cin  <= { val_in[15:0], 16'b0 };        // imaginary parts is 0
             end
             @(negedge clk);
             dload = 0;
@@ -131,7 +133,7 @@ module testbench();
                         error_count = error_count + 1;
                     end
                 end
-                // $fwrite(qsim_out_file, "%h\n", dout);
+                $fwrite(qsim_out_file, "%h\n", dout);
             end
             dread = 0;
             @(posedge clk);     // give it a few cycles to settle
@@ -172,7 +174,7 @@ module testbench();
             input_file   = $fopen(`INPUT_FN, "r");
             golden_file  = $fopen(`GOLDEN_FN, "r");
             qsim_out_file = $fopen(`QSIM_OUT_FN, "w");
-            alu_log_file = $fopen("alu_trace.txt", "w");
+            alu_log_file = $fopen(`ALU_DEBUG_FN, "w");
             if (!twiddle_file || !input_file || !golden_file || !alu_log_file) begin
                 $display("ERROR: Could not open one or more input files.");
                 $finish;

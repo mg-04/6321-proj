@@ -20,20 +20,37 @@ int16_t round_half_even_s1(int32_t val) {
     return (int16_t)((val + ((val & 1) && ((val >> 1) & 1))) >> 1);
 }
 
-// RTNE and >> 14
-int16_t round_half_even_s14(int64_t val) {
-    int64_t mask = (1LL << 14) - 1;
-    int64_t half = (1LL << 13);
+// RTNE and >> 15
+int16_t round_half_even_s15(int64_t val) {
+    int64_t mask = (1LL << 15) - 1;
+    int64_t half = (1LL << 14);
     
     uint16_t frac = (uint16_t)(val & mask);
-    int16_t res_lsb = (int16_t)((val >> 14) & 1);
+    int16_t res_lsb = (int16_t)((val >> 15) & 1);
 
     if (frac < half) {
-        return (int16_t)(val >> 14);    
+        return (int16_t)(val >> 15);    
     } else if (frac > half) {
-        return (int16_t)((val + (1LL << 14)) >> 14); 
+        return (int16_t)((val + (1LL << 15)) >> 15); 
     } else {        // tiebreaker!
-        return (int16_t)((val >> 14) + res_lsb);
+        return (int16_t)((val >> 15) + res_lsb);
+    }
+}
+
+// RTNE and >> 16
+int16_t round_half_even_s16(int64_t val) {
+    int64_t mask = (1LL << 16) - 1;
+    int64_t half = (1LL << 15);
+    
+    uint16_t frac = (uint16_t)(val & mask);
+    int16_t res_lsb = (int16_t)((val >> 16) & 1);
+
+    if (frac < half) {
+        return (int16_t)(val >> 16);    
+    } else if (frac > half) {
+        return (int16_t)((val + (1LL << 16)) >> 16); 
+    } else {        // tiebreaker!
+        return (int16_t)((val >> 16) + res_lsb);
     }
 }
 
@@ -42,6 +59,8 @@ void fft_1024_fixed_dif(int16_t *xr, int16_t *xi, int16_t *tw_r, int16_t *tw_i, 
     for (int stage = 0; stage < 10; stage++) {
         int stride = 512 >> stage;
         int num_groups = 1 << stage;
+        uint16_t scale_mask = 0b1111001111;
+
 
         for (int g = 0; g < num_groups; g++) {
             int group_start = g * (2 * stride);
@@ -63,8 +82,15 @@ void fft_1024_fixed_dif(int16_t *xr, int16_t *xi, int16_t *tw_r, int16_t *tw_i, 
                 int32_t sum_r = (int32_t)a_r_in + (int32_t)b_r_in;
                 int32_t sum_i = (int32_t)a_i_in + (int32_t)b_i_in;
                 
-                int16_t x0_r = round_half_even_s1(sum_r);
-                int16_t x0_i = round_half_even_s1(sum_i);
+				int16_t x0_r, x0_i;
+                int scale = (scale_mask >> stage) & 1;
+				if (scale) {
+                	x0_r = round_half_even_s1(sum_r);
+                	x0_i = round_half_even_s1(sum_i);
+				} else {
+					x0_r = sum_r;
+					x0_i = sum_i;
+				}
 
                 // Stage 2: Diff/Mult path (X1) using RTNE
                 int32_t diff_r = a_r_in - b_r_in;
@@ -73,8 +99,15 @@ void fft_1024_fixed_dif(int16_t *xr, int16_t *xi, int16_t *tw_r, int16_t *tw_i, 
                 int64_t tr_full = (int64_t)diff_r * wr - (int64_t)diff_i * wi;
                 int64_t ti_full = (int64_t)diff_r * wi + (int64_t)diff_i * wr;
 
-                int16_t x1_r = round_half_even_s14(tr_full);
-                int16_t x1_i = round_half_even_s14(ti_full);
+				int16_t x1_r, x1_i;
+				if (scale) {
+                	x1_r = round_half_even_s16(tr_full);
+                	x1_i = round_half_even_s16(ti_full);
+				} else {
+                	x1_r = round_half_even_s15(tr_full);
+                	x1_i = round_half_even_s15(ti_full);
+				}
+
 
                 if (log_fp) {
                     fprintf(log_fp, "%08x %08x %08x %08x %08x\n", 
@@ -99,10 +132,10 @@ int main() {
     int16_t *xr = malloc(N * sizeof(int16_t));
     int16_t *xi = malloc(N * sizeof(int16_t));
 
-    FILE *f_tw = fopen("c/weights.in", "r");
-    FILE *f_in = fopen("c/fft_all_tests.in", "r");
-    FILE *f_out = fopen("c/fft_all_tests.out", "w");
-    FILE *f_log = fopen("c/c_alu_trace.txt", "w");
+    FILE *f_tw = fopen("FFT_input/twiddle_q15.hex", "r");
+    FILE *f_in = fopen("FFT_input/input_q1_15_v3.hex", "r");
+    FILE *f_out = fopen("FFT_input/output_q1_15.hex", "w");
+    FILE *f_log = fopen("FFT_input/c_alu_trace.txt", "w");
 
     if (!f_tw || !f_in || !f_out || !f_log) {
         printf("Error: Could not open required files.\n");
@@ -119,12 +152,12 @@ int main() {
     fclose(f_tw);
 
     // run every test case!
-    printf("Processing 1024 tests...\n");
-    for (int t = 0; t < NUM_TESTS; t++) {
+    printf("Processing 1024 tests...\n");   
+    for (int t = 0; t < NUM_TESTS; t++) {       // input file has real parts ONLY
         for (int i = 0; i < N; i++) {
             if (fscanf(f_in, "%x", &val) != 1) goto end_loop;
-            xr[i] = (int16_t)(val >> 16);
-            xi[i] = (int16_t)(val & 0xFFFF);
+            xr[i] = (int16_t)(val);
+            xi[i] = (int16_t)(0);
         }
 
         fft_1024_fixed_dif(xr, xi, tw_r, tw_i, f_log);

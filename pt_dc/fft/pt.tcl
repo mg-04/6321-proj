@@ -58,26 +58,29 @@ source ./timing.tcl
 ##################################################
 
 # Generate a report file
-set rpt_file "${top_level}.pt.rpt"
+set timing_rpt  "${top_level}.timing.rpt"
+set power_rpt   "${top_level}.power.rpt"
+set constraint_rpt "${top_level}.constraints.rpt"
+set design_rpt   "${top_level}.design.rpt"
 check_timing
 
-report_design >> ${rpt_file}
-report_reference >> ${rpt_file}
-report_constraint >> ${rpt_file}
-report_constraint -all_violators -significant_digits 4 >> ${rpt_file}
-report_timing -significant_digits 4 -delay_type min_max -nworst 120 >> ${rpt_file}
-report_timing -significant_digits 4 -delay_type min -nworst 120 -slack_greater_than 0 >> ${rpt_file}
-report_timing -significant_digits 4 -delay_type max -nworst 5 -slack_greater_than 0 >> ${rpt_file}
+report_design >> ${design_rpt}
+report_reference >> ${design_rpt}
+report_constraint >> ${constraint_rpt}
+report_constraint -all_violators -significant_digits 4 >> ${constraint_rpt}
+report_timing -significant_digits 4 -delay_type min_max -nworst 120 >> ${timing_rpt}
+report_timing -significant_digits 4 -delay_type min -nworst 120 -slack_greater_than 0 >> ${timing_rpt}
+report_timing -significant_digits 4 -delay_type max -nworst 5 -slack_greater_than 0 >> ${timing_rpt}
 
-# Do power analysis
+# Do power analysis # -time {5125000 7655000}
 set power_analysis_mode "time_based"
-read_vcd "../../qsim_dc/tb_fft/fft_tb.vcd" -time {5125000 7655000} -strip_path "testbench/dut"
+read_vcd "../../qsim_dc/tb_fft/fft_tb.vcd" -time {7583 57270} -strip_path "testbench/dut"
 
 update_power
-report_switching_activity >> ${rpt_file}
-report_switching_activity -list_not_annotated >> ${rpt_file}
-report_power >> ${rpt_file}
-report_power -hierarchy >> ${rpt_file}
+report_switching_activity >> ${power_rpt}
+report_switching_activity -list_not_annotated >> ${power_rpt}
+report_power >> ${power_rpt}
+report_power -hierarchy >> ${power_rpt}
 
 write_sdf -context verilog "./${top_level}.pt.sdf"
 

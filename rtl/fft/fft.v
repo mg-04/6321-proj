@@ -6,6 +6,7 @@ module fft (
 	input [8:0] caddr,
 	input [9:0] daddr,
 	input signed [31:0] cin,
+	input [9:0] scale_mask,
 	output reg done,
 	output wire [31:0] dout  // directly wired to sram output
 );
@@ -23,6 +24,7 @@ module fft (
 
     reg [3:0] stage_cnt;    // FFT stage count
     reg [8:0] bf_cnt;       // 0 to 511
+	wire scale = (scale_mask >> stage_cnt) & 1;
 	wire [9:0] stride = 10'd512 >> stage_cnt;	// starts at 512
 	// find the pair of the butterfly
 	wire [9:0] i = bf_cnt % stride;
@@ -79,6 +81,7 @@ module fft (
 	alu butterfly_unit (
 		// data input read from sram
 		.clk(clk),
+		.scale(scale),
 		.x0r(x0_data[31:16]), .x0i(x0_data[15:0]),
 		.x1r(x1_data[31:16]), .x1i(x1_data[15:0]),
 
@@ -97,7 +100,7 @@ module fft (
 			stage_cnt <= 0;
 			bf_cnt <= 0;
 			done <= 0;
-			// dout <= 0;
+			// dout <= 0;	
 		end else begin
 			case (state)
 				IDLE: begin
