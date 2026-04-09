@@ -9,10 +9,14 @@ add wave -noupdate /testbench/cload
 add wave -noupdate /testbench/dload
 add wave -noupdate /testbench/dread
 add wave -noupdate -radix hex /testbench/caddr
-add wave -noupdate -radix hex /testbench/daddr
+add wave -noupdate -radix hex /testbench/daddr1
+add wave -noupdate -radix hex /testbench/daddr2
+add wave -noupdate -radix hex /testbench/din1
+add wave -noupdate -radix hex /testbench/din2
 add wave -noupdate -radix hex /testbench/cin
 add wave -noupdate /testbench/done
-add wave -noupdate -radix hex /testbench/dout
+add wave -noupdate -radix hex /testbench/dout1
+add wave -noupdate -radix hex /testbench/dout2
 
 add wave -divider "DUT Internals"
 add wave -noupdate -radix symbolic /testbench/dut/state
@@ -33,6 +37,8 @@ add wave -divider "Weight Memory Interface"
 add wave -noupdate /testbench/dut/weight_cen
 add wave -noupdate /testbench/dut/weight_gwen
 add wave -noupdate -radix hex /testbench/dut/actual_w_addr
+add wave -noupdate -radix hex /testbench/dut/din1
+add wave -noupdate -radix hex /testbench/dut/din2
 add wave -noupdate -radix hex /testbench/dut/cin
 add wave -noupdate -radix hex /testbench/dut/twiddle_data
 

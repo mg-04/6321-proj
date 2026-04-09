@@ -4,11 +4,15 @@ module fft (
 	input dload,	// load data mode
 	input dread,	// read data mode
 	input [8:0] caddr,
-	input [9:0] daddr,
+	input [9:0] daddr1,
+	input [9:0] daddr2,
+	input signed [31:0] din1,
+	input signed [31:0] din2,
 	input signed [31:0] cin,
 	input [9:0] scale_mask,
 	output reg done,
-	output wire [31:0] dout  // directly wired to sram output
+	output wire [31:0] dout1,  // directly wired to sram output
+	output wire [31:0] dout2
 );
 
 	// control states
@@ -36,8 +40,8 @@ module fft (
 	assign addr_a = group_start + i;
 	assign addr_b = group_start + i + stride;
 	assign w_addr = i << stage_cnt;
-	wire [9:0] actual_addr_a = (state == DLOAD || state == DREAD || state == DREAD_WAIT) ? daddr : addr_a;
-	wire [9:0] actual_addr_b = (state == DLOAD) ? daddr : addr_b;
+	wire [9:0] actual_addr_a = (state == DLOAD || state == DREAD || state == DREAD_WAIT) ? daddr1 : addr_a;
+	wire [9:0] actual_addr_b = (state == DLOAD || state == DREAD || state == DREAD_WAIT) ? daddr2 : addr_b;
 	wire [8:0] actual_w_addr = (state == CLOAD) ? caddr : w_addr;
 
 	// memory control signals
@@ -52,16 +56,18 @@ module fft (
 	wire [31:0] alu_out_X0, alu_out_X1; // Outputs from ALU
 
 	// Mux for IO during external modes
-	wire [31:0] sram_din1 = (state == DLOAD) ? cin : alu_out_X0;
-	wire [31:0] sram_din2 = (state == DLOAD) ? cin : alu_out_X1;
-    assign dout = (state == DREAD_WAIT || state == DREAD) ? x0_data : 32'h0;
+	wire [31:0] sram_din1 = (state == DLOAD) ? din1 : alu_out_X0;
+	wire [31:0] sram_din2 = (state == DLOAD) ? din2 : alu_out_X1;
+    assign dout1 = (state == DREAD_WAIT || state == DREAD) ? x0_data : 32'h0;
+    assign dout2 = (state == DREAD_WAIT || state == DREAD) ? x1_data : 32'h0;
+
 
 	sram_wrapper02 data_mem (
 		.clk(clk),
 		.cen1(data_cen),             // Controlled by FSM
-		.cen2(state == DLOAD ? 1'b1 : data_cen),	// only load from port 1
+		.cen2(data_cen),	// only load from port 1
 		.gwen1(data_gwen),           // 1 for Read, 0 for Write
-		.gwen2(state == DLOAD ? 1'b1 : data_gwen),
+		.gwen2(data_gwen),
 		.addr1(actual_addr_a), 
 		.addr2(actual_addr_b),
 		.din1(sram_din1), 
@@ -100,7 +106,6 @@ module fft (
 			stage_cnt <= 0;
 			bf_cnt <= 0;
 			done <= 0;
-			// dout <= 0;	
 		end else begin
 			case (state)
 				IDLE: begin
@@ -165,7 +170,7 @@ module fft (
 				DREAD: begin
 
 					//addr_a <= daddr;
-					state <= DREAD_WAIT;
+					if (!dread) state <= IDLE;
 				end
 
 				DREAD_WAIT: begin
