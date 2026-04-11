@@ -13,8 +13,31 @@ set top_level fft
 # In this file, libray path and libraries which are used are defined
 source -verbose "../common_scripts/common.tcl" 
 
+# Read libraries
+set search_path [list \
+	"." \
+	"/courses/ee6350/pdk2025/tcbn65gplus/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn65gplus_200a" \
+	"/tools/synopsys/syn/U-2022.12-SP7/libraries/syn" \
+	"../../memory_compiler/sram01/sram01_libs"\
+	"../../memory_compiler/sram02/sram02_libs" \
+	]
+set synthetic_library [list "dw_foundation.sldb"]
+set link_library [list \
+	"*" \
+	"tcbn65gplustc_ccs.db" \
+	"dw_foundation.sldb" \
+	"sram01_nldm_tt_1p00v_1p00v_25c_syn.db" \
+	"sram02_nldm_tt_1p00v_1p00v_25c_syn.db" \
+	]
+set target_library [list "tcbn65gplustc_ccs.db"]
+
 # Read verilog files
 #read_verilog {../../rtl/$top_level/$top_level.v}
+analyze -format verilog "../../rtl/alu/alu.v"
+analyze -format verilog "../../rtl/sram_wrapper01/sram_wrapper01.v"
+analyze -format verilog "../../rtl/sram_wrapper02/sram_wrapper02.v"
+#analyze -format verilog "../../memory_compiler/sram01/sram01.v"
+#analyze -format verilog "../../memory_compiler/sram02/sram02.v"
 analyze -format verilog "../../rtl/$top_level/$top_level.v"
 elaborate $top_level
 
@@ -81,6 +104,9 @@ current_design $top_level
 
 # Link the design
 link
+
+# This allows for maximum timing optimization across ALU/Memory interfaces
+#set_ungroup [get_designs *]
 
 # Synthesize the design
 # Note : This command performs a high-effort compile on the current design for better quality of results (QoR)

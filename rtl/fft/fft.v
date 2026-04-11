@@ -18,6 +18,7 @@ module fft (
 	// control states
 	localparam IDLE   = 4'd0,
                FETCH  = 4'd1,		// fetch, write cycle
+			   CALC = 4'd2,
                WRITE  = 4'd3,
                DONE   = 4'd5,
 			   CLOAD      = 4'd6,
@@ -87,6 +88,7 @@ module fft (
 	alu butterfly_unit (
 		// data input read from sram
 		.clk(clk),
+		.rst_n(rst),
 		.scale(scale),
 		.x0r(x0_data[31:16]), .x0i(x0_data[15:0]),
 		.x1r(x1_data[31:16]), .x1i(x1_data[15:0]),
@@ -126,6 +128,10 @@ module fft (
 				FETCH: begin
 					// read happens on next edge
 					// wires handled combinatorially
+					state <= WRITE;
+				end
+
+				CALC: begin
 					state <= WRITE;
 				end
 

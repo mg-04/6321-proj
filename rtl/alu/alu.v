@@ -2,6 +2,7 @@
 // new alu model with rounding to the nearest even, 3dB better performance
 module alu(
     input clk,
+	input rst_n,
 	input scale, 		// if 1, >> 1
     input signed [15:0] x0r, x0i, x1r, x1i, wr, wi, // Now all Q1.15
     output reg signed [15:0] X0r0, X0i0, X1r0, X1i0     
