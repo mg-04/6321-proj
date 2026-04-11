@@ -16,18 +16,14 @@ module testbench();
     parameter N_TESTS = 2;
 
     reg clk, rst, start;
-    reg cload, dload, dread;
-    reg [8:0]  caddr;
-    reg [9:0]  daddr1;
-    reg [9:0]  daddr2;
-    reg [31:0] din1;
+    reg [1:0] mode;
+    reg [9:0]  mux_addr;
+    reg [31:0] dcin1;
     reg [31:0] din2;
-    reg [31:0] cin;
     
     wire done;
     wire [31:0] dout1;
     wire [31:0] dout2;
-
 
     // file IO handling
     integer twiddle_file, input_file, golden_file, qsim_out_file, alu_log_file;
@@ -39,9 +35,9 @@ module testbench();
 
     fft dut (
         .clk(clk), .rst(rst), .start(start),
-        .cload(cload), .dload(dload), .dread(dread),
-        .caddr(caddr), .daddr1(daddr1), .daddr2(daddr2), 
-        .din1(din1), .din2(din2), .cin(cin),
+        .mode(mode),
+        .mux_addr(mux_addr),
+        .dcin1(dcin1), .din2(din2),
         .scale_mask(`SCALE_MASK),
         .done(done), .dout1(dout1), .dout2(dout2)
     );
@@ -56,9 +52,9 @@ module testbench();
         $dumpvars(0, testbench);
 
         // 1. Initialize
-        rst = 0; start = 0; cload = 0; dload = 0; dread = 0;
-        caddr = 0; daddr1 = 0; daddr2 = 0; 
-        din1 = 0; din2 = 0; cin = 0;
+        rst = 0; start = 0; mode = 2'b00;
+        mux_addr = 9'b0;
+        dcin1 = 0; din2 = 0; 
         
         open_files();
         
@@ -69,16 +65,16 @@ module testbench();
 
         // 2. Load weights
         $display("Loading 512 weights...");
-        cload = 1;
+        mode <= 2'b01;		// CLOAD
 		@(posedge clk);     // sync
         for (i = 0; i < W_POINTS; i = i + 1) begin
             scan_ret = $fscanf(twiddle_file, "%h\n", val_in1);
             @(negedge clk);
-            caddr <= i[8:0];
-            cin   <= val_in1;
+            mux_addr <= i[9:0];
+            dcin1   <= val_in1;
         end
         @(negedge clk);
-        cload = 0;
+        mode <= 2'b00;
 
         // 1024 rounds of testing!!
         for (test_idx = 0; test_idx < N_TESTS; test_idx = test_idx + 1) begin
@@ -86,20 +82,20 @@ module testbench();
 
             // 3. Load input data
             $display("Loading 1024 inputs...");
-            dload = 1;
+            mode <= 2'b10;		// DLOAD
             @(posedge clk);     // 2 syncs
             @(posedge clk);
             for (i = 0; i < N_POINTS; i = i + 2) begin
                 scan_ret = $fscanf(input_file, "%h\n", val_in1);
                 scan_ret = $fscanf(input_file, "%h\n", val_in2);
                 @(negedge clk);
-                daddr1 <= i[9:0];
-                daddr2 <= i[9:0] + 1'b1;
-                din1  <= { val_in1[15:0], 16'b0 };        // imaginary parts is 0
+                mux_addr <= i[9:0];
+                //daddr2 <= i[9:0] + 1'b1;
+                dcin1 <= { val_in1[15:0], 16'b0 };        // imaginary parts is 0
                 din2  <= { val_in2[15:0], 16'b0 };
             end
             @(negedge clk);
-            dload = 0;
+            mode <= 2'b00;
 
             // 4. start FFT, until done
             $display("STATUS: Starting FFT core...");
@@ -107,29 +103,30 @@ module testbench();
             start = 1;
             @(negedge clk);
             start = 0;
+
             wait(done == 1);
             $display("STATUS: FFT complete at %t", $time);
 
             // 5. Read back from memory, verify output
             $display("STATUS: Verifying results...");
             
-            @(posedge clk); // FSM DREAD
             @(posedge clk); // FSM DREAD_WAIT (SRAM reads)
-            @(negedge clk);
-            daddr1 = i[9:0];
-            daddr2 = i[9:0] + 1'b1;
-            dread = 1;
+			@(negedge clk);
+			mode <= 2'b11;	// DREAD
             @(posedge clk); // FSM DREAD (dout captures SRAM output)
+            @(negedge clk);
+            mux_addr = i[9:0];
+            //daddr2 = i[9:0] + 1'b1;
             `SD;
             // Setup initial read state
             for (i = 0; i < N_POINTS; i = i + 2) begin
                 @(negedge clk);
                 // prepare the address for next pipeline
                 if (i + 2 < N_POINTS) begin
-                        daddr1 = (i[9:0] + 2'd2);
-                        daddr2 = (i[9:0] + 2'd3);
+                        mux_addr = (i[9:0] + 2'd2);
+                        //daddr2 = (i[9:0] + 2'd3);
                     end else begin
-                        dread = 0; // De-assert on the last read issued
+                        mode <= 2'b00; // De-assert on the last read issued
                     end
                 
                 scan_ret = $fscanf(golden_file, "%h\n", gt_val1);
@@ -148,11 +145,11 @@ module testbench();
                 $fwrite(qsim_out_file, "%h\n", dout1);
                 $fwrite(qsim_out_file, "%h\n", dout2);
             end
-            dread = 0;
+            mode <= 2'b00;
             @(posedge clk);     // give it a few cycles to settle
             @(posedge clk);
         end         // end of this round
-        
+
 
         // report
         if (error_count == 0)

@@ -61,7 +61,6 @@ void fft_1024_fixed_dif(int16_t *xr, int16_t *xi, int16_t *tw_r, int16_t *tw_i, 
         int num_groups = 1 << stage;
         uint16_t scale_mask = 0b1111001111;
 
-
         for (int g = 0; g < num_groups; g++) {
             int group_start = g * (2 * stride);
             for (int i = 0; i < stride; i++) {

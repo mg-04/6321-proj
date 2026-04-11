@@ -19,7 +19,7 @@ module testbench();
     reg cload, dload, dread;
     reg [8:0]  caddr;
     reg [9:0]  daddr1;
-    reg [9:0]  daddr2;》
+    reg [9:0]  daddr2;
     reg [31:0] din1;
     reg [31:0] din2;
     reg [31:0] cin;
