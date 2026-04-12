@@ -13,7 +13,7 @@ vlog +acc -incr /courses/ee6350/pdk2025/tcbn65gplus/TSMCHOME/digital/Front_End/v
 vlog +acc -incr tb_fft.v 
 
 # include verilog modules
-# vlog +acc -incr ../../dc/alu/alu.nl.v 
+vlog +acc -incr ../../dc/alu/alu.nl.v 
 vlog +acc -incr ../../dc/fft/fft.nl.v 
 vlog +acc -incr ../../dc/sram_wrapper01/sram_wrapper01.nl.v 
 vlog +acc -incr ../../memory_compiler/sram01/sram01.v 
@@ -22,7 +22,7 @@ vlog +acc -incr ../../memory_compiler/sram02/sram02.v
 
 # run simulation with sdf annotations and check waveforms 
 
-# TODO: remove +notimingchecks
+# TODO: remove 
 vsim -voptargs=+acc +notimingchecks -t ps -lib work \
 -sdftyp /testbench/dut=../../dc/fft/fft.syn.sdf \
 testbench

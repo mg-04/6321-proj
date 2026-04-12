@@ -32,13 +32,12 @@ set link_library [list \
 set target_library [list "tcbn65gplustc_ccs.db"]
 
 # Read verilog files
-#read_verilog {../../rtl/$top_level/$top_level.v}
-analyze -format verilog "../../rtl/alu/alu.v"
-analyze -format verilog "../../rtl/sram_wrapper01/sram_wrapper01.v"
-analyze -format verilog "../../rtl/sram_wrapper02/sram_wrapper02.v"
+analyze -format verilog "../../rtl/$top_level/$top_level.v"
+analyze -format verilog "../../dc/alu/alu.nl.v"
+analyze -format verilog "../../dc/sram_wrapper01/sram_wrapper01.nl.v"
+analyze -format verilog "../../dc/sram_wrapper02/sram_wrapper02.nl.v"
 #analyze -format verilog "../../memory_compiler/sram01/sram01.v"
 #analyze -format verilog "../../memory_compiler/sram02/sram02.v"
-analyze -format verilog "../../rtl/$top_level/$top_level.v"
 elaborate $top_level
 
 # List the names of the designs loaded in memory
@@ -86,6 +85,14 @@ check_design
 # Set timing environment through another .tcl file
 source -verbose "./timing.tcl"
 
+#########################################
+# Don't touch synthesized submodules    #
+#########################################
+
+set_dont_touch data_mem
+set_dont_touch weight_mem
+set_dont_touch butterfly_unit
+
 # Set the fix_multiple_port_nets attribute to a specified value on the current design or a list of designs
 # Note: '-all' option inserts buffers to the ports
 #       '-buffer_constants' option inserts buffers to logic constants instead of duplicating them
@@ -111,6 +118,9 @@ link
 # Synthesize the design
 # Note : This command performs a high-effort compile on the current design for better quality of results (QoR)
 compile_ultra
+
+# use compile to not touch internal blocks
+# compile
 
 
 ##################################################

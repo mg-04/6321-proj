@@ -13,7 +13,7 @@
 module testbench();
     parameter N_POINTS = 1024;
     parameter W_POINTS = 512;
-    parameter N_TESTS = 2;
+    parameter N_TESTS = 10;
 
     reg clk, rst, start;
     reg [1:0] mode;
@@ -78,7 +78,7 @@ module testbench();
 
         // 1024 rounds of testing!!
         for (test_idx = 0; test_idx < N_TESTS; test_idx = test_idx + 1) begin
-            $display("--- Starting Test Case %0d/1024 ---", test_idx + 1);
+            $display("--- Starting Test Case %0d/%0d ---", test_idx + 1, N_TESTS);
 
             // 3. Load input data
             $display("Loading 1024 inputs...");

@@ -42,4 +42,5 @@ clean:
 	rm -rf *.pvl
 	rm -rf *.nl.PG.v
 	rm -rf *.mr
+	rm -rf *.txt
 

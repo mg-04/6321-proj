@@ -4,6 +4,7 @@
 
 #define N 1024
 #define NUM_TESTS 1024
+#define SCALE_MASK 0b1111001111
 
 uint32_t pack_hex(int16_t r, int16_t i) {
     return ((uint32_t)(uint16_t)r << 16) | (uint16_t)i;
@@ -69,7 +70,7 @@ void fft_1024_fixed_dif(int16_t *xr, int16_t *xi, int16_t *tw_r, int16_t *tw_i, 
     for (int stage = 0; stage < 10; stage++) {
         int stride = 512 >> stage;
         int num_groups = 1 << stage;
-        uint16_t scale_mask = 0b1111001111;
+        uint16_t scale_mask = SCALE_MASK;
 
         for (int g = 0; g < num_groups; g++) {
             int group_start = g * (2 * stride);

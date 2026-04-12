@@ -35,11 +35,11 @@ read_db [list "tcbn65gplustc_ccs.db"]
 # Read verilog files
 set svr_enable_vpp true
 read_verilog "../../dc/$top_level/$top_level.nl.v"
-read_verilog "../../dc/alu/alu.nl.v"
-read_verilog "../../dc/sram_wrapper01/sram_wrapper01.nl.v"
-read_verilog "../../memory_compiler/sram01/sram01.v"
-read_verilog "../../dc/sram_wrapper02/sram_wrapper02.nl.v"
-read_verilog "../../memory_compiler/sram02/sram02.v"
+#read_verilog "../../dc/alu/alu.nl.v"
+#read_verilog "../../dc/sram_wrapper01/sram_wrapper01.nl.v"
+#read_verilog "../../memory_compiler/sram01/sram01.v"
+#read_verilog "../../dc/sram_wrapper02/sram_wrapper02.nl.v"
+#read_verilog "../../memory_compiler/sram02/sram02.v"
 
 # Resolve references in a design
 # Note: It resolves all references between different modules in the hierarchy

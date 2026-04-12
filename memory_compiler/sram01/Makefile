@@ -7,7 +7,7 @@ INST_NAME = sram01
 OUT_DIR   = sram01_libs
 WORDS     = 512
 BITS      = 32
-FREQ      = 1000
+FREQ      = 500
 MUX       = 8
 
 # Common flags used for all views
@@ -43,4 +43,4 @@ db:
 
 # Equivalent to nuke.sh
 clean:
-	rm -rf *.cdl *.gds2 *.vclef *.lib *.v *.clf lc_output.txt *.log *.db
+	rm -rf *.cdl *.gds2 *.vclef *.lib *.v *.clf lc_output.txt *.log *.db $(INST_NAME)_libs/*
