@@ -1,0 +1,34 @@
+##############################################
+# Innovus Input Configuration File           #
+##############################################
+
+# Verilog netlist.
+set init_verilog {../../dc/fft/fft.nl.PG.v}
+
+# Top module.
+set init_design {fft}
+
+# IO file.
+set init_io_file {./fft.io}
+
+# Set the name of your .lef file
+set init_lef_file { \
+    /courses/ee6350/pdk2025/tcbn65gplus/TSMCHOME/digital/Back_End/lef/tcbn65gplus_200a/lef/tcbn65gplus_9lmT2.lef \
+    ../../memory_compiler/sram01/sram01.vclef \
+    ../../memory_compiler/sram02/sram02.vclef \
+}
+
+##############################################################
+# Below here you probably don't have to change anything
+##############################################################
+# Set the name of your "muli-mode-multi-corner data file
+# You don't need to change this unless you're using a 
+# different mmmc.tcl file. 
+set init_mmmc_file {./mmmc.view}
+
+# Some helpful input mode settings.
+set init_import_mode {-treatUndefinedCellAsBbox 0 -keepEmptyModule 1}
+
+# Power and gound nets.
+set init_pwr_net {VDD}
+set init_gnd_net {VSS}

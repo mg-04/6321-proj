@@ -1,0 +1,41 @@
+# Version:1.0 MMMC View Definition File
+# Do Not Remove Above Line
+
+create_rc_corner \
+    -cap_table {/courses/ee6350/pdk2025/tcbn65gplus/TSMCHOME/digital/Back_End/lef/tcbn65gplus_200a/techfiles/captable/cln65g+_1p09m+alrdl_typical_top2.captable} \
+    -name typical_rc \
+    -preRoute_res {1.0} \
+    -preRoute_cap {1.0} \
+    -preRoute_clkres {0.0} \
+    -preRoute_clkcap {0.0} \
+    -postRoute_res {1.0} \
+    -postRoute_cap {1.0} \
+    -postRoute_xcap {1.0} \
+    -postRoute_clkres {0.0} \
+    -postRoute_clkcap {0.0}
+
+create_library_set \
+-name typical_lib \
+-timing { \
+    /courses/ee6350/pdk2025/tcbn65gplus/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn65gplus_200a/tcbn65gplustc_ccs.lib \
+    ../../memory_compiler/sram01/sram01_libs/sram01_nldm_tt_1p00v_1p00v_25c_syn.lib \
+    ../../memory_compiler/sram02/sram02_libs/sram02_nldm_tt_1p00v_1p00v_25c_syn.lib \
+}
+
+create_constraint_mode \
+-name typical_constraint \
+-sdc_files {../../dc/fft/fft.syn.mod.sdc}
+
+create_delay_corner \
+-name typical_dly \
+-library_set {typical_lib} \
+-rc_corner {typical_rc}
+
+create_analysis_view \
+-name typical \
+-constraint_mode {typical_constraint} \
+-delay_corner {typical_dly}
+
+set_analysis_view \
+-setup {typical} \
+-hold {typical}

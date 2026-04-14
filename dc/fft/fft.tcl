@@ -89,9 +89,9 @@ source -verbose "./timing.tcl"
 # Don't touch synthesized submodules    #
 #########################################
 
-set_dont_touch data_mem
-set_dont_touch weight_mem
-set_dont_touch butterfly_unit
+#set_dont_touch data_mem
+#set_dont_touch weight_mem
+#set_dont_touch butterfly_unit
 
 # Set the fix_multiple_port_nets attribute to a specified value on the current design or a list of designs
 # Note: '-all' option inserts buffers to the ports
