@@ -22,8 +22,8 @@ init_design
 set std_cell_height 1.8
 # core_height should be a multiple of the std_cell_height
 # Need to iterate the core width and height to make the density close to 0.7
-set dut_width 700
-set dut_height [expr 220*$std_cell_height]
+set dut_width 600
+set dut_height [expr 180*$std_cell_height]
 set ring_left_width 1
 set ring_right_width 1
 set ring_top_width 1
@@ -56,8 +56,8 @@ set sram02_w 506.7
 set sram02_h 148.23
 
 # sram01: bottom left
-set sram01_x 40
-set sram01_y 40
+set sram01_x 10
+set sram01_y 10
 
 # sram02: top left, stick 40 um above sram01
 set sram02_x 40

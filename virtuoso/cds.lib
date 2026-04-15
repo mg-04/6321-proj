@@ -1,0 +1,41 @@
+# Base libraries
+INCLUDE /courses/ee6350/pdk2025/CMN65GP/T-N65-CM-SP-018-K3_RF_1p9m_6X1Z1U_ALRDL/cds.lib
+
+# Standard cell library
+DEFINE tcbn65gplus /courses/ee6350/pdk2025/tcbn65gplus/TSMCHOME/digital/Back_End/oa/tcbn65gplus
+
+# Pad library
+DEFINE tpfn65gpgv2od3_200d_mt_2_9lm /courses/ee6350/pdk2025/tpfn65gpgv2od3_200d/TSMCHOME/digital/Back_End/oa/tpfn65gpgv2od3_200d_mt_2_9lm
+
+# Bonding pad library
+# Note: this library is streamed in from the gds provided by the pdk because there is no oa (OpenAccess) for this in the pdk.
+DEFINE tpbn65v_200a_cup_9M_6X1Z1U /courses/ee6350/proj_2025Spring/ref/virtuoso/tpbn65v_200a_cup_9M_6X1Z1U
+
+# Seal ring library
+DEFINE E6350_LARGE_SEALRING_2320X1110 /courses/ee6350/shared/E6350_LARGE_SEALRING_2320X1110
+
+# Project libraries
+DEFINE down_counter /courses/ee6350/proj_2025Spring/ref/virtuoso/down_counter
+DEFINE sram_controller /courses/ee6350/proj_2025Spring/ref/virtuoso/sram_controller
+DEFINE sram00 /courses/ee6350/proj_2025Spring/ref/virtuoso/sram00
+DEFINE sram_wrapper /courses/ee6350/proj_2025Spring/ref/virtuoso/sram_wrapper
+DEFINE dut /courses/ee6350/proj_2025Spring/ref/virtuoso/dut
+DEFINE test_clkgen /courses/ee6350/proj_2025Spring/ref/virtuoso/test_clkgen
+DEFINE scan_chain /courses/ee6350/proj_2025Spring/ref/virtuoso/scan_chain
+DEFINE top /courses/ee6350/proj_2025Spring/ref/virtuoso/top
+DEFINE chip /courses/ee6350/proj_2025Spring/ref/virtuoso/chip
+DEFINE chip_streamed_in /courses/ee6350/proj_2025Spring/ref/virtuoso/chip_streamed_in
+DEFINE chip_w_sealring_streamed_in /courses/ee6350/proj_2025Spring/ref/virtuoso/chip_w_sealring_streamed_in
+DEFINE DM_chip_w_sealring /courses/ee6350/proj_2025Spring/ref/virtuoso/DM_chip_w_sealring
+DEFINE DODPO_chip_w_sealring /courses/ee6350/proj_2025Spring/ref/virtuoso/DODPO_chip_w_sealring
+DEFINE chip_w_sealring_w_dummy_streamed_in /courses/ee6350/proj_2025Spring/ref/virtuoso/chip_w_sealring_w_dummy_streamed_in
+#Removed by ddDeleteObj: DEFINE test /courses/ee6350/proj_2025Spring/ref/virtuoso/test
+DEFINE test /courses/ee6350/proj_2025Spring/ref/virtuoso/test
+DEFINE lab3 /homes/user/stud/spring25/mg4264/ee6321/lab3/virtuoso/lab3
+DEFINE mult_layout /homes/user/stud/spring25/mg4264/ee6321/lab4/virtuoso/mult_layout
+DEFINE top_my /homes/user/stud/spring25/mg4264/ee6321/lab5/virtuoso/top_my
+DEFINE lfsr1_layout /homes/user/stud/spring25/mg4264/ee6321/lab5/virtuoso/lfsr1_layout
+DEFINE sig_layout /homes/user/stud/spring25/mg4264/ee6321/lab5/virtuoso/sig_layout
+DEFINE fft /homes/user/stud/spring25/mg4264/ee6321/proj/virtuoso/fft
+DEFINE sram01 /homes/user/stud/spring25/mg4264/ee6321/proj/virtuoso/sram01
+DEFINE sram02 /homes/user/stud/spring25/mg4264/ee6321/proj/virtuoso/sram02

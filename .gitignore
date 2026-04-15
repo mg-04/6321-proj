@@ -2,6 +2,7 @@
 *.out
 *.txt
 *.hex
+*.png
 
 qsim*/*/*.ini
 qsim*/*/work
@@ -75,3 +76,18 @@ innovus/*/*enc*
 innovus/*/ccopt_clock_tree.spec
 innovus/*/final_cap.tarpt
 innovus/*/sdc/ibex_dut.sdc
+innovus/*/*/template/*.stl
+
+virtuoso/*.log
+virtuoso/*.record
+virtuoso/*.swp
+virtuoso/fft/*
+virtuoso/sram01/*
+virtuoso/sram02/*
+virtuoso/.cadence/*
+virtuoso/.abstract/*
+virtuoso/.*/*
+virtuoso/tpbn65v_200a_cup_9M_6X1Z1U/*
+virtuoso/si.env
+virtuoso/.calibreviewsetup
+vituoso/.stimulus*

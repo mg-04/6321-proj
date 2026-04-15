@@ -1,0 +1,3 @@
+- Please open virtuoso by: source run_virtuoso.source.sh , this helps set up environment 
+- Calibre DRC/LVS/PEX: use runsets in /courses/ee6350/shared/calibre/
+- template for importing gds: ./gds_import.template

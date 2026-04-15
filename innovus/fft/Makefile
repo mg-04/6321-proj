@@ -39,4 +39,8 @@ clean:
 	rm -rf timingReports summaryReport .cadence
 	rm -f  netlist/TIE_temp.v sdc/ibex_dut.sdc
 
+# view innovus
+	# innovus
+	# > restoreDesign fft.routed.enc.dat fft
+
 .PHONY: all apr cdl clean

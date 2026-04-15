@@ -1,0 +1,4 @@
+mgc_home=getShellEnvVar("MGC_HOME")
+load(strcat(mgc_home "/shared/pkgs/icv/tools/queryskl/calibre.skl"))
+
+
