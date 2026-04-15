@@ -1,0 +1,22 @@
+//  Runset file generated on Wed Apr 15 13:33:11 2026
+//  by Calibre Interactive v2024.3_25.13    Thu Aug 1 18:57:13 PDT 2024
+//
+//      *** PLEASE DO NOT MODIFY THIS FILE ***
+//
+//
+
+drc.rulesFile.value = "/courses/ee4321/tech/tsmc65/T-N65-CM-SP-018-K3_MOM/Base_PDK/PDK_CRN65GP_v1.0c_official_IC61_20101010/Calibre/drc/calibre.drc"
+drc.runDir.value = "/homes/user/stud/spring25/mg4264/ee6321/proj/virtuoso/calibre_DRC_runs"
+drc.layout.layoutFile.value = "fft.calibre.db"
+cmn.layout.defFiles.value = [ "fft.def" ]
+drc.layout.topCellLibrary.value = "fft"
+cmn.layout.topCellLibraryFDI.value = "fft"
+drc.layout.topCell.value = "fft"
+drc.layout.topCellView.value = "layout"
+cmn.layout.topCellViewFDI.value = "layout"
+drc.drcdb.resultsFile.value = "fft.drc.results"
+drc.reports.drcSummaryReport.value = "fft.drc.summary"
+drc.rhdb.fileName.value = "fft.rhdb"
+drc.dfmDefaults.resultsFile.value = "fft.dfmDefaults.db"
+
+cmn.licenseTimeout.specified = true

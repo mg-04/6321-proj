@@ -23,7 +23,7 @@ set std_cell_height 1.8
 # core_height should be a multiple of the std_cell_height
 # Need to iterate the core width and height to make the density close to 0.7
 set dut_width 600
-set dut_height [expr 180*$std_cell_height]
+set dut_height [expr 165*$std_cell_height]
 set ring_left_width 1
 set ring_right_width 1
 set ring_top_width 1
@@ -55,27 +55,32 @@ set sram01_h 69.105
 set sram02_w 506.7
 set sram02_h 148.23
 
-# sram01: bottom left
-set sram01_x 10
-set sram01_y 10
+# sram01: bottom left (Snapped to 0.2 grid)
+set sram01_x 10.01
+set sram01_y 10.8
 
-# sram02: top left, stick 40 um above sram01
-set sram02_x 40
-set sram02_y [expr $sram01_y + $sram01_h + 40]
+# sram02: top left (Snapped to 0.2 grid)
+set sram02_x 10.1
+set sram02_y 120.6
 
+# Flip the top macro to MX to prevent pin routing shorts
 placeInstance weight_mem_sram01_inst $sram01_x $sram01_y R0 -fixed
-placeInstance data_mem_sram02_inst $sram02_x $sram02_y R0 -fixed
+placeInstance data_mem_sram02_inst $sram02_x $sram02_y MX -fixed
+
+# add halo to avoid drc misalignment
+addHaloToBlock 3 3 3 3 weight_mem_sram01_inst
+addHaloToBlock 3 3 3 3 data_mem_sram02_inst
 
 checkPlace
 redraw 
 fit
 
-createPlaceBlockage -box [expr $sram01_x-3] [expr $sram01_y-3] \
-                         [expr $sram01_x+$sram01_w+3] [expr $sram01_y+$sram01_h+3]
-createPlaceBlockage -box [expr $sram02_x-3] [expr $sram02_y-3] \
-                         [expr $sram02_x+$sram02_w+3] [expr $sram02_y+$sram02_h+3]
-redraw
-fit
+#createPlaceBlockage -box [expr $sram01_x-3.01] [expr $sram01_y-3] \
+#                         [expr $sram01_x+$sram01_w+3.01] [expr $sram01_y+$sram01_h+3]
+#createPlaceBlockage -box [expr $sram02_x-3.1] [expr $sram02_y-3] \
+#                         [expr $sram02_x+$sram02_w+3.1] [expr $sram02_y+$sram02_h+3]
+#redraw
+#fit
 
 ##################################################
 # Generate power rails 
@@ -325,7 +330,7 @@ setNanoRouteMode -quiet -routeSiLengthLimit 200
 setNanoRouteMode -quiet -routeSiEffort high
 setNanoRouteMode -quiet -routeWithViaInPin false
 setNanoRouteMode -quiet -routeWithViaOnlyForStandardCellPin false
-setNanoRouteMode -quiet -drouteUseMultiCutViaEffort low
+setNanoRouteMode -quiet -drouteUseMultiCutViaEffort high
 setNanoRouteMode -routeTopRoutingLayer 6
 setNanoRouteMode -routeBottomRoutingLayer 1
 setNanoRouteMode -drouteElapsedTimeLimit 0

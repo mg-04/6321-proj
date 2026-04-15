@@ -1,0 +1,35 @@
+//  Runset file generated on Wed Apr 15 14:05:05 2026
+//  by Calibre Interactive v2024.3_25.13    Thu Aug 1 18:57:13 PDT 2024
+//
+//      *** PLEASE DO NOT MODIFY THIS FILE ***
+//
+//
+
+lvs.rulesFile.value = "/courses/ee4321/tech/tsmc65/T-N65-CM-SP-018-K3_MOM/Base_PDK/PDK_CRN65GP_v1.0c_official_IC61_20101010/Calibre/lvs/calibre.lvs"
+lvs.runDir.value = "/homes/user/stud/spring25/mg4264/ee6321/proj/virtuoso/calibre_LVS_runs"
+lvs.layout.layoutFile.value = "fft.calibre.db"
+cmn.layout.defFiles.value = [ "fft.def" ]
+lvs.layout.topCellLibrary.value = "fft"
+cmn.layout.topCellLibraryFDI.value = "fft"
+lvs.layout.topCell.value = "fft"
+lvs.layout.topCellView.value = "layout"
+cmn.layout.topCellViewFDI.value = "layout"
+lvs.layout.layoutNetlist.value = "fft.sp"
+lvs.source2.sourceFile.value = "fft.sp"
+lvs.source2.topCellLibrary.value = "fft"
+lvs.source2.topCellLibraryFDI.value = "fft"
+lvs.source2.topCell.value = "fft"
+lvs.source2.topCellFDI.value = "fft"
+lvs.source.exportFromSourceViewer.value = false
+lvs.source.sourceFile.value = "/homes/user/stud/spring25/mg4264/ee6321/proj/innovus/fft/fft.cdl"
+lvs.source.topCellLibrary.value = "fft"
+lvs.source.topCellLibraryFDI.value = "fft"
+lvs.source.topCell.value = "fft"
+lvs.source.topCellFDI.value = "fft"
+lvs.reports.lvsReport.value = "fft.lvs.report"
+lvs.svrfIncludes.statementType.value = "SVRF"
+lvs.ercdb.resultsFile.value = "fft.erc.results"
+lvs.ercSummaryReport.report.value = "fft.erc.summary"
+
+cmn.licenseTimeout.specified = true
+cmn.miscPrefs.overwriteLayoutPref.value = false

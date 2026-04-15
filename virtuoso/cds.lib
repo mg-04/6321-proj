@@ -39,3 +39,4 @@ DEFINE sig_layout /homes/user/stud/spring25/mg4264/ee6321/lab5/virtuoso/sig_layo
 DEFINE fft /homes/user/stud/spring25/mg4264/ee6321/proj/virtuoso/fft
 DEFINE sram01 /homes/user/stud/spring25/mg4264/ee6321/proj/virtuoso/sram01
 DEFINE sram02 /homes/user/stud/spring25/mg4264/ee6321/proj/virtuoso/sram02
+DEFINE fft /homes/user/stud/spring25/mg4264/ee6321/proj/virtuoso/fft
