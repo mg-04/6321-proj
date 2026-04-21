@@ -206,7 +206,7 @@ Puts "###########################"
 
 # Perform timing optimization before or after the clock tree is built, or after routing and generate timing reports
 # Notes: '-preCTS' option performs timing optimization on the placed design, before the clock tree is built
- optDesign -preCTS
+optDesign -preCTS
 
 # Save design
 #redraw

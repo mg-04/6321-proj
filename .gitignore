@@ -7,6 +7,7 @@
 matlab/fft_overflow
 matlab/test
 
+
 qsim*/*/*.ini
 qsim*/*/work
 qsim*/*/*.log
@@ -22,6 +23,7 @@ qsim*/*/*.out
 qsim*/*/etch*
 qsim*/*/transcript
 
+
 dc/*/alib-52
 dc/*/*.log
 dc/*/*.svf
@@ -35,6 +37,7 @@ dc/*/*.syn
 dc/*/*.mr
 dc/*/log
 dc/*/*.temp.sdf
+
 
 memory_compiler/*/*.cdl
 memory_compiler/*/*.gds2
@@ -50,10 +53,12 @@ memory_compiler/*/*.v
 
 memory_compiler/sram05/*
 
+
 pt*/*/*.rpt
 pt*/*/*.sdf
 pt*/*/*.log
 pt*/*/*.fsdb
+
 
 innovus/*/*.lef
 innovus/*/*.rpt*
@@ -68,6 +73,7 @@ innovus/*/*.cdl
 innovus/*/*.sp
 innovus/*/*.log
 innovus/*/*.ob
+innovus/*/*.csd
 innovus/*/*.typical
 innovus/*/*.latchInferredMCP
 innovus/*/*.lib
@@ -85,6 +91,7 @@ innovus/*/*.timing*
 
 innovus/sram_wrapper01
 innovus/sram_wrapper02
+
 
 virtuoso/*.log
 virtuoso/*.record
