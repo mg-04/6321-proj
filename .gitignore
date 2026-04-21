@@ -90,4 +90,6 @@ virtuoso/.*/*
 virtuoso/tpbn65v_200a_cup_9M_6X1Z1U/*
 virtuoso/si.env
 virtuoso/.calibreviewsetup
-vituoso/.stimulus*
+virtuoso/.stimulus*
+virtuoso/calibre_DRC_runs/*.rep
+virtuoso/calibre_DRC_runs/*.density

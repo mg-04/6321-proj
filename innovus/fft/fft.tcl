@@ -22,8 +22,9 @@ init_design
 set std_cell_height 1.8
 # core_height should be a multiple of the std_cell_height
 # Need to iterate the core width and height to make the density close to 0.7
-set dut_width 600
-set dut_height [expr 165*$std_cell_height]
+set core_width 600
+set core_height [expr 220*$std_cell_height]
+
 set ring_left_width 1
 set ring_right_width 1
 set ring_top_width 1
@@ -39,9 +40,7 @@ set ring_bottom_space 0.5
 ##################################################
 
 # Specify the floorplan dimensions by size; or by die, I/O, or core coordinates (Need modification)
-floorPlan -s $dut_width $dut_height [expr 2*$ring_left_width + $ring_left_space + 2] \
-[expr 2*$ring_bottom_width + $ring_bottom_space +2] [expr 2*$ring_right_width + $ring_right_space +2] \
-[expr 2*$ring_top_width + $ring_top_space + 2]
+floorPlan -s $core_width $core_height 20 30 20 20
 
 # GUI only
 redraw
@@ -52,20 +51,20 @@ fit
 ##################################################
 set sram01_w 317.79
 set sram01_h 69.105
-set sram02_w 506.7
+set sram02_w 560.7
 set sram02_h 148.23
 
 # sram01: bottom left (Snapped to 0.2 grid)
-set sram01_x 10.01
-set sram01_y 10.8
+set sram01_x 40
+set sram01_y 43.2
 
 # sram02: top left (Snapped to 0.2 grid)
-set sram02_x 10.1
-set sram02_y 120.6
+set sram02_x 40
+set sram02_y 240.6
 
 # Flip the top macro to MX to prevent pin routing shorts
-placeInstance weight_mem_sram01_inst $sram01_x $sram01_y R0 -fixed
-placeInstance data_mem_sram02_inst $sram02_x $sram02_y MX -fixed
+placeInstance weight_mem_sram01_inst $sram01_x $sram01_y MX -fixed
+placeInstance data_mem_sram02_inst $sram02_x $sram02_y R0 -fixed
 
 # add halo to avoid drc misalignment
 addHaloToBlock 3 3 3 3 weight_mem_sram01_inst
@@ -75,83 +74,49 @@ checkPlace
 redraw 
 fit
 
-#createPlaceBlockage -box [expr $sram01_x-3.01] [expr $sram01_y-3] \
-#                         [expr $sram01_x+$sram01_w+3.01] [expr $sram01_y+$sram01_h+3]
-#createPlaceBlockage -box [expr $sram02_x-3.1] [expr $sram02_y-3] \
-#                         [expr $sram02_x+$sram02_w+3.1] [expr $sram02_y+$sram02_h+3]
+createPlaceBlockage -box [expr $sram01_x-3.] [expr $sram01_y-3] \
+                         [expr $sram01_x+$sram01_w+3] [expr $sram01_y+$sram01_h+3]
+createPlaceBlockage -box [expr $sram02_x-3] [expr $sram02_y-3] \
+                         [expr $sram02_x+$sram02_w+3] [expr $sram02_y+$sram02_h+3]
 #redraw
 #fit
 
 ##################################################
-# Generate power rails 
+# Generate power rails
 ##################################################
 
-# Adds a new global net connection to the specified global net
 proc connect_std_cells_to_power { } {
-
-    # Connect the tiehi, tiolo nets in instances to the global nets 'VDD' & 'VSS'
     globalNetConnect VDD -type tiehi -inst * -verbose
     globalNetConnect VSS -type tielo -inst * -verbose
-
-    # Connect the power pins in instances to the global nets 'VDD' & 'VSS'
     globalNetConnect VDD -type pgpin -pin VDD -inst * -verbose
     globalNetConnect VSS -type pgpin -pin VSS -inst * -verbose
 }
 
-Puts "#####################"
-Puts "###"
-Puts "### Power Routing ..."
-Puts "###"
-Puts "#####################"
-
 connect_std_cells_to_power
-# Apply and restore the global net connectivity rules to the the design
-# and creates the necessary connecktions between instances and these global nets
 applyGlobalNets
 
-
-# Create rings for specified nets round the core boundary or selected blocks and groups of core rows
-# Notes: This command should be used after creating an initial floorplan
-#        Need to use different metal layers for horizontal and vertical lines (e.g. even: vertical, odd: horizontal)
 addRing -nets {VDD VSS} -type core_rings -layer {top M5 bottom M5 left M6 right M6} -width $ring_top_width \
         -spacing $ring_top_space -center 1 \
 	    -extend_corner {lt lb rt rb}
 
-# GUI only
 redraw
 fit
 
+addStripe -block_ring_top_layer_limit M6 \
+	  -block_ring_bottom_layer_limit M6 \
+	  -padcore_ring_top_layer_limit M6 \
+	  -padcore_ring_bottom_layer_limit M6 \
+          -max_same_layer_jog_length 6 \
+          -merge_stripes_value 4 \
+	  -layer M6 \
+          -set_to_set_distance 8 \
+          -direction vertical \
+          -nets {VDD VSS} \
+	  -width 1 \
+	  -spacing 0.5 \
+	  -area [list 0 0 $core_width 800]
+
 sroute -nets {VDD VSS} -allowJogging 0 -allowLayerChange 0 -blockPinTarget boundaryWithPin
-
-
-# Add vertical power rails
-addStripe -block_ring_top_layer_limit M6 \
-    -block_ring_bottom_layer_limit M6 \
-    -padcore_ring_top_layer_limit M6 \
-    -padcore_ring_bottom_layer_limit M6 \
-    -max_same_layer_jog_length 6 \
-    -merge_stripes_value 4 \
-    -layer M6 \
-    -set_to_set_distance 8 \
-    -direction vertical \
-    -nets {VDD VSS} \
-    -width 1 \
-    -spacing 0.5 \
-    -area [list 0 0 $dut_width $dut_height]
-
-addStripe -block_ring_top_layer_limit M6 \
-    -block_ring_bottom_layer_limit M6 \
-    -padcore_ring_top_layer_limit M6 \
-    -padcore_ring_bottom_layer_limit M6 \
-    -max_same_layer_jog_length 6 \
-    -merge_stripes_value 4 \
-    -layer M6 \
-    -set_to_set_distance 8 \
-    -direction vertical \
-    -nets {VDD VSS} \
-    -width 1 \
-    -spacing 0.5 \
-    -area [list 0 0 $dut_width $dut_height]
 
 ##################################################
 # Set all the input/output ports
@@ -185,7 +150,14 @@ setDesignMode -process 65 -flowEffort standard
 # Control certain aspects of how the software places cells
 setPlaceMode -timingdriven true -congEffort high -reorderScan true
 
-placeDesign -noPrePlaceOpt
+# Limit routing layers to leave upper metals for power/clock
+setMaxRouteLayer 5 
+
+# Enable high-effort fanout fixing early (from sram_wrapper)
+setOptMode -fixFanoutLoad true -effort high -moveInst true -reclaimArea true
+
+placeDesign
+#placeDesign -noPrePlaceOpt
 setDrawView place
 connect_std_cells_to_power
 
@@ -331,7 +303,7 @@ setNanoRouteMode -quiet -routeSiEffort high
 setNanoRouteMode -quiet -routeWithViaInPin false
 setNanoRouteMode -quiet -routeWithViaOnlyForStandardCellPin false
 setNanoRouteMode -quiet -drouteUseMultiCutViaEffort high
-setNanoRouteMode -routeTopRoutingLayer 6
+setNanoRouteMode -routeTopRoutingLayer 5
 setNanoRouteMode -routeBottomRoutingLayer 1
 setNanoRouteMode -drouteElapsedTimeLimit 0
 setNanoRouteMode -drouteAutoStop false
@@ -426,12 +398,8 @@ verify_drc
 # Notes: '-cell' option specifies the list of filler cells to add
 # addFiller -cell FILL16TS FILL1TS FILL2TS FILL32TS FILL4TS FILL64TS FILL8TS -prefix IBM13RFLPVT_FILLER
 addFiller -cell DCAP64 DCAP32 DCAP16 DCAP8 DCAP4 FILL64 FILL32 FILL16 FILL8 FILL4 FILL2 FILL1 -prefix FILLER
-#addFiller -cell FILL1 FILL2 FILL4 FILL8 FILL16 FILL32 FILL64 FILL1_LL FILL_NW_FA_LL FILL_NW_HH FILL_NW_LL -fillBoundary
 verifyGeometry
-#verifyConnectivity -type all -error 1000 -warning 50
 verify_drc
-#verifyProcessAntenna
-redraw
 
 
 ##################################################
@@ -450,7 +418,7 @@ verify_drc
 
 # Detect conditions such as opens, unconnected wires, unconnected pins, loops, partial routing, and unrouted nets
 # Generate violation markers in the design window
-verifyConnectivity -type regular -error 1000 -warning 50
+verifyConnectivity -type all
 
 # Verify process antenna effect (PAE) and maximum floating area violations
 verifyProcessAntenna
@@ -482,9 +450,10 @@ streamOut "$design_name.gds" -mapFile "../layermap/tsmc65_6350_spring24.layermap
 
 # Write a netlist file of the design
 # Notes: '-phys' option writes out physical cell instances, and inserts power and ground nets in the netlist
-saveNetlist -phys -excludeLeafCell -excludeCellInst "FILL64 FILL32 FILL16 FILL8 FILL4 FILL2 FILL1" "$design_name.phy.v"
+saveNetlist -phys -excludeLeafCell -excludeCellInst "FILL1 FILL2 FILL4 FILL8 FILL16 FILL32 FILL64 FILL1_LL FILL_NW_FA_LL FILL_NW_HH FILL_NW_LL" "$design_name.phy.v"
 saveNetlist "$design_name.nophy.v"
 saveNetlist -includePhysicalCell "DCAP64 DCAP32 DCAP16 DCAP8 DCAP4" -includePowerGround -excludeLeafCell -excludeCellInst "FILL64 FILL32 FILL16 FILL8 FILL4 FILL2 FILL1" "$design_name.PG.v"
+
 # Extract RC information
 extractRC -outfile "$design_name.cap"
 rcOut -spef "$design_name.spef"

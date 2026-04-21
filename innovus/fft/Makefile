@@ -12,11 +12,11 @@ SRAM_VERILOG = $(SRAM01_DIR)/sram01.v $(SRAM02_DIR)/sram02.v
 SRAM_CDL     = $(SRAM01_DIR)/sram01.cdl $(SRAM02_DIR)/sram02.cdl
 
 # Default target: Run APR then make the CDL
-all: apr cdl
+all: clean apr cdl
 
 apr:
 	@echo "--- Starting Innovus APR Flow ---"
-	innovus -nowin -init $(TCL_SCRIPT)
+	innovus -init $(TCL_SCRIPT)
 
 cdl:
 	@echo "--- Converting Verilog to CDL ---"
@@ -37,10 +37,14 @@ clean:
 	rm -rf ccopt_clock_tree.spec final_cap.tarpt
 	rm -rf *.lef *.rpt* *.def* *.gds* *.v *.place *.sdc *.sdf *.spef *.cdl *.sp *.log *.ob *.typical *.latchInferredMCP *.lib *.csd
 	rm -rf timingReports summaryReport .cadence
-	rm -f  netlist/TIE_temp.v sdc/ibex_dut.sdc
+	rm -f  netlist/TIE_temp.v sdc/ibex_dut.sdc *.cmd *.tif.gz
 
 # view innovus
 	# innovus
 	# > restoreDesign fft.routed.enc.dat fft
+	# Tools/Violation Browser... / 
+	# open the windows: see disconnect issues
 
 .PHONY: all apr cdl clean
+
+
