@@ -176,7 +176,7 @@ setOptMode -holdTargetSlack 0.05
 setOptMode -setupTargetSlack 0.0
 setOptMode -SimplifyNetlist false ; # When true, simplifies the netlist to decrease congestion, area, and improve runtime
 #clearClockDomains
-setOptMode -usefulSkew false
+setOptMode -usefulSkew true
 #optDesign -preCTS -outDir ${designName}_reports/1_preCTSOpt
 #timeDesign -reportOnly -slackReports -outDir ${designName}_reports/1_preCTSOpt
 connect_std_cells_to_power
@@ -352,11 +352,16 @@ setOptMode -moveInst true
 setOptMode -reclaimArea true
 setOptMode -fixDRC true
 setOptMode -fixCap true
+setOptMode -fixTran true     ;# Specifically for max_transition (CRITICAL)
+setOptMode -fixFanoutLoad true
+setOptMode -effort high
 
 # Perform timing optimization before or after the clock tree is built, or after routing
 # Notes: '-hold' option corrects hold violations
 #        '-postRoute' option performs timing optimization on a design whose routing is complete
-optDesign -postRoute -setup -hold
+optDesign -postRoute -drv
+optDesign -postRoute -setup
+optDesign -postRoute -hold -incremental
 
 # Connect all new cells to VDD/GND
 globalNetConnect VDD -type pgpin -pin {VDD} -override

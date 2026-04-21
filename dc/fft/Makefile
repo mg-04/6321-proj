@@ -9,7 +9,7 @@ PYTHON_EXEC = source $(PYTHON_ENV) && python
 
 .PHONY: all clean synthesis pg sdc
 
-all: synthesis pg sdc
+all: clean synthesis pg sdc
 
 # Synthesis
 # This runs dc_shell and produces the netlist and log
@@ -43,4 +43,3 @@ clean:
 	rm -rf *.nl.PG.v
 	rm -rf *.mr
 	rm -rf *.txt
-

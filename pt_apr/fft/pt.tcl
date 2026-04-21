@@ -64,10 +64,18 @@ set constraint_rpt "${top_level}.constraints.rpt"
 set design_rpt   "${top_level}.design.rpt"
 check_timing
 
+
 report_design >> ${design_rpt}
 report_reference >> ${design_rpt}
 report_constraint >> ${constraint_rpt}
 report_constraint -all_violators -significant_digits 4 >> ${constraint_rpt}
+echo "\n--- Detailed Max Transition Violators ---" >> ${constraint_rpt}
+report_constraint -all_violators -max_transition -significant_digits 4 >> ${constraint_rpt}
+echo "\n--- Detailed Max Capacitance Violators ---" >> ${constraint_rpt}
+report_constraint -all_violators -max_capacitance -significant_digits 4 >> ${constraint_rpt}
+echo "\n--- Detailed Max Fanout Violators ---" >> ${constraint_rpt}
+report_constraint -all_violators -max_fanout -significant_digits 4 >> ${constraint_rpt}
+
 report_timing -significant_digits 4 -delay_type min_max -nworst 120 >> ${timing_rpt}
 report_timing -significant_digits 4 -delay_type min -nworst 120 -slack_greater_than 0 >> ${timing_rpt}
 report_timing -significant_digits 4 -delay_type max -nworst 5 -slack_greater_than 0 >> ${timing_rpt}

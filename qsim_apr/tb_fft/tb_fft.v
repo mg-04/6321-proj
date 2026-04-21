@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 `define SD #0.010
-`define HALF_CLOCK_PERIOD #2   // 250 MHz Clock
+`define HALF_CLOCK_PERIOD #1   // 500 MHz Clock
 `define QSIM_OUT_FN "./qsim_fft.out"
 `define TWIDDLE_FN  "../../matlab/FFT_input/twiddle_q15.hex" // 512 entries (all in 32-bit hex)
 `define INPUT_FN    "../../matlab/FFT_input/input_q1_15_v3.hex"   // 1024 entries x 10
@@ -111,47 +111,45 @@ module testbench();
             wait(done == 1);
             $display("STATUS: FFT complete at %t", $time);
 
-            // 5. Read back from memory, verify output
-            $display("STATUS: Verifying results...");
-            
-            @(posedge clk); // FSM DREAD_WAIT (SRAM reads)
+            			@(negedge clk);
+
+ 			// 5. Read back from memory, verify output
+			$display("STATUS: Verifying results...");
+
+			mode <= 2'b11;      // DREAD
 			@(negedge clk);
-			mode <= 2'b11;	// DREAD
-            @(posedge clk); // FSM DREAD (dout captures SRAM output)
-            @(negedge clk);
-            mux_addr = i[9:0];
-            //daddr2 = i[9:0] + 1'b1;
-            `SD;
-            // Setup initial read state
-            for (i = 0; i < N_POINTS; i = i + 2) begin
-                @(negedge clk);
-                // prepare the address for next pipeline
-                if (i + 2 < N_POINTS) begin
-                        mux_addr = (i[9:0] + 2'd2);
-                        //daddr2 = (i[9:0] + 2'd3);
-                    end else begin
-                        mode <= 2'b00; // De-assert on the last read issued
-                    end
-                
-                scan_ret = $fscanf(golden_file, "%h\n", gt_val1);
-                scan_ret = $fscanf(golden_file, "%h\n", gt_val2);
+			mux_addr <= 10'd0;
 
-                if (dout1 !== gt_val1) begin
-                    $display("ERROR: Bit Mismatch at bin %0d! DUT1=%h, GT=%h", i, dout1, gt_val1);
-                    error_count = error_count + 1;
-                end
+			// prime the output pipeline (2 cycles of latency)
+			@(negedge clk);
 
-                if (dout2 !== gt_val2) begin
-                    $display("ERROR: Bit Mismatch at bin %0d! DUT2=%h, GT=%h", i + 1, dout2, gt_val2);
-                    error_count = error_count + 1;
-                end
+			mux_addr <= 10'd2;
+			@(negedge clk);
+			// output pipeline
+			for (i = 0; i < N_POINTS; i = i + 2) begin
+				scan_ret = $fscanf(golden_file, "%h\n", gt_val1);
+				scan_ret = $fscanf(golden_file, "%h\n", gt_val2);
 
-                $fwrite(qsim_out_file, "%h\n", dout1);
-                $fwrite(qsim_out_file, "%h\n", dout2);
-            end
-            mode <= 2'b00;
-            @(posedge clk);     // give it a few cycles to settle
-            @(posedge clk);
+				if (dout1 !== gt_val1) begin
+					$display("ERROR: Bit Mismatch at bin %0d! DUT1=%h, GT=%h", i, dout1, gt_val1);
+					error_count = error_count + 1;
+				end
+				if (dout2 !== gt_val2) begin
+					$display("ERROR: Bit Mismatch at bin %0d! DUT2=%h, GT=%h", i + 1, dout2, gt_val2);
+					error_count = error_count + 1;
+				end
+
+				$fwrite(qsim_out_file, "%h\n", dout1);
+				$fwrite(qsim_out_file, "%h\n", dout2);
+
+				// prepare address for 2 cycles from now
+				if (i + 4 < N_POINTS) begin
+					mux_addr <= (i + 4); 
+				end else if (i + 2 >= N_POINTS) begin
+					mode <= 2'b00;
+				end	
+				@(negedge clk);
+			end
         end         // end of this round
 
 

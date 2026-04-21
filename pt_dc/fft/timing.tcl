@@ -8,21 +8,22 @@
 set fo4 0.02
 set clk_period [expr 100*$fo4] 
 
-# Used as setup/hold check pessimism margin, please adjust as needed
-set clk_uncertainty [expr 5*$fo4] 
-set clk_transition [expr 3*$fo4]
-
-# Pessimistic setting for hold time, please adjust as needed 
-set typical_input_delay [expr 1*$fo4]
-set typical_output_delay [expr 1*$fo4]
-
-set typical_wire_load 0.002
-
 # Create real clock if clock port is found
 set clk_name "clk"
 set clk_port "clk"
-set rst_name "rstn"
-set rst_port "rstn"
+set rst_name "rst"
+set rst_port "rst"
+
+# Used as setup/hold check pessimism margin, please adjust as needed
+set clk_setup_uncertainty [expr 3 * $fo4] ;# 100ps
+set clk_hold_uncertainty  [expr 1 * $fo4] ;# 20ps
+set clk_transition [expr 5*$fo4]
+
+# Pessimistic setting for hold time, please adjust as needed 
+set typical_input_delay [expr 0.1*$clk_period]
+set typical_output_delay [expr 1*$fo4]
+
+set typical_wire_load 0.002
 
 # If no waveform is specified, 50% duty cycle is assumed
 if {[sizeof_collection [get_ports $clk_port]] > 0} {
@@ -45,13 +46,13 @@ if {[sizeof_collection [get_ports $clk_port]] == 0} {
 }
 
 # Set clock uncertainty
-set_clock_uncertainty $clk_uncertainty [get_clocks $clk_name]
-
+set_clock_uncertainty -setup $clk_setup_uncertainty [get_clocks $clk_name]
+set_clock_uncertainty -hold  $clk_hold_uncertainty  [get_clocks $clk_name]
 # Propagated clock used for gated clocks only
 set_clock_transition $clk_transition [get_clocks $clk_name]
 
 # Set delays: Input, Output
-set_input_delay $typical_input_delay [all_inputs] -clock $clk_name
+set_input_delay $typical_input_delay -clock $clk_name [remove_from_collection [all_inputs] [get_ports "$clk_port $rst_port"]]
 remove_input_delay -clock $clk_name [find port $clk_port]
 set_output_delay $typical_output_delay [all_outputs] -clock $clk_name
 

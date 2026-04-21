@@ -58,7 +58,7 @@ pt*/*/*.rpt
 pt*/*/*.sdf
 pt*/*/*.log
 pt*/*/*.fsdb
-
+pt*/*/.nfs*
 
 innovus/*/*.lef
 innovus/*/*.rpt*

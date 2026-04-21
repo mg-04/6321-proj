@@ -6,8 +6,8 @@ module fft (
 	input signed [31:0] din2,
 	input [9:0] scale_mask,
 	output reg done,
-	output wire [31:0] dout1,  // directly wired to sram output
-	output wire [31:0] dout2
+	output reg [31:0] dout1,  // directly wired to sram output
+	output reg [31:0] dout2
 );
 	// input unpacking
 	wire cload = (mode == 2'b01);
@@ -43,7 +43,9 @@ module fft (
 	wire scale = (scale_mask >> stage_cnt) & 1;
 	wire [9:0] stride = 10'd512 >> stage_cnt;	// starts at 512
 	// find the pair of the butterfly
-	wire [9:0] i = bf_cnt % stride;
+	// faster way to compute modulo
+	wire [9:0] mask = stride - 1'b1;
+	wire [9:0] i = bf_cnt & mask;
 	wire [9:0] group_start = (bf_cnt / stride) * (2 * stride);	// address offset for the current butterfly group
 
 	wire [8:0] w_addr = i << stage_cnt;
@@ -112,8 +114,23 @@ module fft (
 	// Mux for IO during external modes
 	wire [31:0] sram_din1 = (state == DLOAD) ? din1 : alu_out_X0;
 	wire [31:0] sram_din2 = (state == DLOAD) ? din2 : alu_out_X1;
-    assign dout1 = (state == DREAD) ? x0_data : 32'h0;
-    assign dout2 = (state == DREAD) ? x1_data : 32'h0;
+
+	// output assignment
+	always @(posedge clk or negedge rst) begin
+		if (~rst) begin
+			dout1 <= 32'h0;
+			dout2 <= 32'h0;
+		end else begin
+			// We only drive dout when in DREAD mode to save power/noise
+			if (state == DREAD || state == DREAD_WAIT) begin
+				dout1 <= x0_data;
+				dout2 <= x1_data;
+			end else begin
+				dout1 <= 32'h0;
+				dout2 <= 32'h0;
+			end
+		end
+	end
 
 
 	sram_wrapper02 data_mem (
