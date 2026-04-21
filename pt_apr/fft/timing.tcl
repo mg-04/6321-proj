@@ -6,7 +6,7 @@
 # Setting variables
 # FO4 delay of the technology in nanosecond
 set fo4 0.02
-set clk_period [expr 500*$fo4]   
+set clk_period [expr 200*$fo4]   
 # 100 MHz
 # Create real clock if clock port is found
 set clk_name "clk"
@@ -15,17 +15,15 @@ set rst_name "rst"
 set rst_port "rst"
 
 # Used as setup/hold check pessimism margin, please adjust as needed
-set clk_setup_uncertainty [expr 5 * $fo4] ;# 100ps
+set clk_setup_uncertainty [expr 3 * $fo4] ;# 100ps
 set clk_hold_uncertainty  [expr 1 * $fo4] ;# 20ps
-set clk_transition [expr 3*$fo4]
+set clk_transition [expr 5*$fo4]
 
 # Pessimistic setting for hold time, please adjust as needed 
 set typical_input_delay [expr 0.1*$clk_period]
 set typical_output_delay [expr 1*$fo4]
 
 set typical_wire_load 0.002
-
-
 
 # If no waveform is specified, 50% duty cycle is assumed
 if {[sizeof_collection [get_ports $clk_port]] > 0} {
@@ -62,5 +60,5 @@ set_output_delay $typical_output_delay [all_outputs] -clock $clk_name
 set_propagated_clock [all_clocks]
 
 # Set loading of outputs 
-set_load 0.15 [all_outputs]
+set_load 0.04 [all_outputs]
 # used to be 0.004

@@ -22,7 +22,7 @@ init_design
 set std_cell_height 1.8
 # core_height should be a multiple of the std_cell_height
 # Need to iterate the core width and height to make the density close to 0.7
-set core_width 600
+set core_width 550
 set core_height [expr 180*$std_cell_height]
 
 set ring_left_width 1
@@ -172,7 +172,7 @@ setOptMode -effort high ; # man setOptMode and see the effort table
 setOptMode -maxDensity 0.95 ; # Default is 0.95 (netlist won't grow above this value)
 setOptMode -drcMargin 0.0 ; # Default is 0
 #setOptMode -holdTargetSlack 0.0 
-setOptMode -holdTargetSlack 0.1
+setOptMode -holdTargetSlack 0.05
 setOptMode -setupTargetSlack 0.0
 setOptMode -SimplifyNetlist false ; # When true, simplifies the netlist to decrease congestion, area, and improve runtime
 #clearClockDomains
@@ -227,7 +227,6 @@ Puts "############################"
 # Notes: '-cppr' option removes pessimism from clock paths
 #        '-analysisType bcwc' option checks the design for two extreme conditions
 #setAnalysisMode -cppr both
-#update_constraint_mode -name typical_constraint -sdc_files "../../dc/$design_name/$design_name.syn.mod.sdc"
 update_constraint_mode -name typical_constraint -sdc_file "../../dc/$design_name/$design_name.syn.mod.sdc"
 
 set_analysis_view -setup {typical} -hold {typical}
@@ -267,6 +266,11 @@ source "./ccopt_clock_tree.spec"
 # CCOpt optimizes both the clock tree and the datapath to meet global timing constraints
 # Paul added: -cts 
 ccopt_design -cts
+
+# enable cppr and time checking
+setAnalysisMode -cppr both
+timeDesign -postCTS -hold
+optDesign -postCTS -hold
 
 # Generate skew and clock tree report
 report_ccopt_skew_groups -file "$design_name.ccopt.skew.rpt"
@@ -333,7 +337,7 @@ extractRC
 # Notes: '-analysisType onChipVaration' option calculates the delay for one path based on maximum operation
 #        condition while calculating the delay for another path based on minimum operating condition
 #        for setup or hold checks
-setAnalysisMode -analysisType onChipVariation
+setAnalysisMode -analysisType onChipVariation -cppr both
 
 # Set global parameters for timing optimization
 setOptMode -yieldEffort none
@@ -489,4 +493,4 @@ puts "# Encounter script finished            #"
 puts "#                                      #"
 puts "########################################"
 
-# exit
+exit
