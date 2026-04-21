@@ -4,6 +4,9 @@
 *.hex
 *.png
 
+matlab/fft_overflow
+matlab/test
+
 qsim*/*/*.ini
 qsim*/*/work
 qsim*/*/*.log
@@ -77,6 +80,11 @@ innovus/*/ccopt_clock_tree.spec
 innovus/*/final_cap.tarpt
 innovus/*/sdc/ibex_dut.sdc
 innovus/*/*/template/*.stl
+innovus/*/*.cmd
+innovus/*/*.timing*
+
+innovus/sram_wrapper01
+innovus/sram_wrapper02
 
 virtuoso/*.log
 virtuoso/*.record
@@ -91,5 +99,9 @@ virtuoso/tpbn65v_200a_cup_9M_6X1Z1U/*
 virtuoso/si.env
 virtuoso/.calibreviewsetup
 virtuoso/.stimulus*
-virtuoso/calibre_DRC_runs/*.rep
-virtuoso/calibre_DRC_runs/*.density
+virtuoso/calibre_DRC_runs/*
+!virtuoso/calibre_DRC_runs/runset
+virtuoso/calibre_LVS_runs/*
+!virtuoso/calibre_DRC_runs/runset
+
+virtuoso/refLib/*sram_wrapper02.list

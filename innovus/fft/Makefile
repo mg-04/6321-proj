@@ -39,11 +39,6 @@ clean:
 	rm -rf timingReports summaryReport .cadence
 	rm -f  netlist/TIE_temp.v sdc/ibex_dut.sdc *.cmd *.tif.gz
 
-# view innovus
-	# innovus
-	# > restoreDesign fft.routed.enc.dat fft
-	# Tools/Violation Browser... / 
-	# open the windows: see disconnect issues
 
 .PHONY: all apr cdl clean
 

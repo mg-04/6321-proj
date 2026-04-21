@@ -23,7 +23,7 @@ set std_cell_height 1.8
 # core_height should be a multiple of the std_cell_height
 # Need to iterate the core width and height to make the density close to 0.7
 set core_width 600
-set core_height [expr 220*$std_cell_height]
+set core_height [expr 180*$std_cell_height]
 
 set ring_left_width 1
 set ring_right_width 1
@@ -55,12 +55,12 @@ set sram02_w 560.7
 set sram02_h 148.23
 
 # sram01: bottom left (Snapped to 0.2 grid)
-set sram01_x 40
-set sram01_y 43.2
+set sram01_x 10
+set sram01_y [expr 24*$std_cell_height]
 
 # sram02: top left (Snapped to 0.2 grid)
-set sram02_x 40
-set sram02_y 240.6
+set sram02_x 10
+set sram02_y [expr 90*$std_cell_height]
 
 # Flip the top macro to MX to prevent pin routing shorts
 placeInstance weight_mem_sram01_inst $sram01_x $sram01_y MX -fixed
@@ -489,4 +489,4 @@ puts "# Encounter script finished            #"
 puts "#                                      #"
 puts "########################################"
 
-exit
+# exit
