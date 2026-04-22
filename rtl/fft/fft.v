@@ -46,7 +46,7 @@ module fft (
 	// faster way to compute modulo
 	wire [9:0] mask = stride - 1'b1;
 	wire [9:0] i = bf_cnt & mask;
-	wire [9:0] group_start = (bf_cnt / stride) * (2 * stride);	// address offset for the current butterfly group
+	wire [9:0] group_start = (bf_cnt & ~(stride - 1)) << 1;
 
 	wire [8:0] w_addr = i << stage_cnt;
 	wire [9:0] addr_a = group_start + i;
@@ -99,6 +99,7 @@ module fft (
 	wire [31:0] x0_data, x1_data;       // Outputs from SRAM to ALU
 	wire [31:0] twiddle_data;       // Output to ALU
 	reg  [31:0] x0_reg, x1_reg, w_reg;	// registers for ALU input
+	reg scale_reg;
 	wire [31:0] alu_out_X0, alu_out_X1; // Outputs from ALU
 
 	always @(posedge clk) begin
@@ -107,6 +108,7 @@ module fft (
 				x0_reg <= x0_data;
 				x1_reg <= x1_data;
 				w_reg  <= twiddle_data;
+				scale_reg <= scale;
 			end
 		end
 	end

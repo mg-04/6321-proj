@@ -269,6 +269,8 @@ ccopt_design -cts
 
 # enable cppr and time checking
 setAnalysisMode -cppr both
+timeDesign -postCTS
+optDesign -postCTS
 timeDesign -postCTS -hold
 optDesign -postCTS -hold
 
@@ -347,7 +349,7 @@ setOptMode -maxDensity 0.95
 setOptMode -holdTargetSlack 0.1 -setupTargetSlack 0.0
 setOptMode -holdFixingEffort high
 setOptMode -simplifyNetlist false
-setOptMode -usefulSkew false
+setOptMode -usefulSkew true
 setOptMode -moveInst true
 setOptMode -reclaimArea true
 setOptMode -fixDRC true

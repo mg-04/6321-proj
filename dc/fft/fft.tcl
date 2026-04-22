@@ -113,7 +113,7 @@ current_design $top_level
 link
 
 # This allows for maximum timing optimization across ALU/Memory interfaces
-#set_ungroup [get_designs *]
+#set_ungroup [get_designs alu]
 
 # Synthesize the design
 # Note : This command performs a high-effort compile on the current design for better quality of results (QoR)

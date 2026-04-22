@@ -37,7 +37,7 @@ clean:
 	rm -rf ccopt_clock_tree.spec final_cap.tarpt
 	rm -rf *.lef *.rpt* *.def* *.gds* *.v *.place *.sdc *.sdf *.spef *.cdl *.sp *.log *.ob *.typical *.latchInferredMCP *.lib *.csd
 	rm -rf timingReports summaryReport .cadence
-	rm -f  netlist/TIE_temp.v sdc/ibex_dut.sdc *.cmd *.tif.gz
+	rm -f  netlist/TIE_temp.v sdc/ibex_dut.sdc *.anls* .timing*
 
 
 .PHONY: all apr cdl clean
