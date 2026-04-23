@@ -18,7 +18,7 @@ create_library_set \
 -name typical_lib \
 -timing { \
     /courses/ee6350/pdk2025/tcbn65gplus/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn65gplus_200a/tcbn65gplustc_ccs.lib \
-    ../../memory_compiler/sram01/sram01_libs/sram01_nldm_tt_1p00v_1p00v_25c_syn.lib \
+    ../../memory_compiler/sram05/sram05_libs/sram05_nldm_tt_1p00v_1p00v_25c_syn.lib \
     ../../memory_compiler/sram02/sram02_libs/sram02_nldm_tt_1p00v_1p00v_25c_syn.lib \
 }
 

@@ -49,33 +49,33 @@ fit
 ##################################################
 # Place Blocks
 ##################################################
-set sram01_w 317.79
-set sram01_h 69.105
+set sram05_w 148.715
+set sram05_h 98.875
 set sram02_w 560.7
 set sram02_h 148.23
 
-# sram01: bottom left (Snapped to 0.2 grid)
-set sram01_x 10
-set sram01_y [expr 24*$std_cell_height]
+# sram05: bottom left (Snapped to 0.2 grid)
+set sram05_x 10
+set sram05_y [expr 20*$std_cell_height]
 
 # sram02: top left (Snapped to 0.2 grid)
 set sram02_x 10
-set sram02_y [expr 90*$std_cell_height]
+set sram02_y [expr 110*$std_cell_height]
 
 # Flip the top macro to MX to prevent pin routing shorts
-placeInstance weight_mem_sram01_inst $sram01_x $sram01_y MX -fixed
+placeInstance weight_mem_sram05_inst $sram05_x $sram05_y MX -fixed
 placeInstance data_mem_sram02_inst $sram02_x $sram02_y R0 -fixed
 
 # add halo to avoid drc misalignment
-addHaloToBlock 3 3 3 3 weight_mem_sram01_inst
+addHaloToBlock 3 3 3 3 weight_mem_sram05_inst
 addHaloToBlock 3 3 3 3 data_mem_sram02_inst
 
 checkPlace
 redraw 
 fit
 
-createPlaceBlockage -box [expr $sram01_x-3.] [expr $sram01_y-3] \
-                         [expr $sram01_x+$sram01_w+3] [expr $sram01_y+$sram01_h+3]
+createPlaceBlockage -box [expr $sram05_x-3.] [expr $sram05_y-3] \
+                         [expr $sram05_x+$sram05_w+3] [expr $sram05_y+$sram05_h+3]
 createPlaceBlockage -box [expr $sram02_x-3] [expr $sram02_y-3] \
                          [expr $sram02_x+$sram02_w+3] [expr $sram02_y+$sram02_h+3]
 #redraw

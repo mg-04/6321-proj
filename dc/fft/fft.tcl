@@ -18,7 +18,7 @@ set search_path [list \
 	"." \
 	"/courses/ee6350/pdk2025/tcbn65gplus/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn65gplus_200a" \
 	"/tools/synopsys/syn/U-2022.12-SP7/libraries/syn" \
-	"../../memory_compiler/sram01/sram01_libs"\
+	"../../memory_compiler/sram05/sram05_libs"\
 	"../../memory_compiler/sram02/sram02_libs" \
 	]
 set synthetic_library [list "dw_foundation.sldb"]
@@ -26,7 +26,7 @@ set link_library [list \
 	"*" \
 	"tcbn65gplustc_ccs.db" \
 	"dw_foundation.sldb" \
-	"sram01_nldm_tt_1p00v_1p00v_25c_syn.db" \
+	"sram05_nldm_tt_1p00v_1p00v_25c_syn.db" \
 	"sram02_nldm_tt_1p00v_1p00v_25c_syn.db" \
 	]
 set target_library [list "tcbn65gplustc_ccs.db"]
@@ -34,10 +34,8 @@ set target_library [list "tcbn65gplustc_ccs.db"]
 # Read verilog files
 analyze -format verilog "../../rtl/$top_level/$top_level.v"
 analyze -format verilog "../../dc/alu/alu.nl.v"
-analyze -format verilog "../../dc/sram_wrapper01/sram_wrapper01.nl.v"
+analyze -format verilog "../../dc/sram_wrapper05/sram_wrapper05.nl.v"
 analyze -format verilog "../../dc/sram_wrapper02/sram_wrapper02.nl.v"
-#analyze -format verilog "../../memory_compiler/sram01/sram01.v"
-#analyze -format verilog "../../memory_compiler/sram02/sram02.v"
 elaborate $top_level
 
 # List the names of the designs loaded in memory

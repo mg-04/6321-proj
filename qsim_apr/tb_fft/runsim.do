@@ -14,7 +14,7 @@ vlog +acc -incr tb_fft.v
 
 # include verilog modules
 vlog +acc -incr ../../innovus/fft/fft.PG.v 
-vlog +acc -incr +define+POWER_PINS ../../memory_compiler/sram01/sram01.v 
+vlog +acc -incr +define+POWER_PINS ../../memory_compiler/sram05/sram05.v 
 vlog +acc -incr +define+POWER_PINS ../../memory_compiler/sram02/sram02.v 
 
 

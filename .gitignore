@@ -41,6 +41,7 @@ dc/*/*.temp.sdf
 
 memory_compiler/*/*.cdl
 memory_compiler/*/*.gds2
+memory_compiler/*/*.lef
 memory_compiler/*/*.vclef
 memory_compiler/*/*.lib
 memory_compiler/*/*.vcd
@@ -50,8 +51,9 @@ memory_compiler/*/*.log
 memory_compiler/*/*_libs
 memory_compiler/*/*.db
 memory_compiler/*/*.v
+memory_compiler/*/*.hcell
+memory_compiler/*/*.rcf
 
-memory_compiler/sram05/*
 
 
 pt*/*/*.rpt
@@ -99,6 +101,7 @@ virtuoso/*.swp
 virtuoso/fft/*
 virtuoso/sram01/*
 virtuoso/sram02/*
+virtuoso/sram05/*
 virtuoso/.cadence/*
 virtuoso/.abstract/*
 virtuoso/.*/*

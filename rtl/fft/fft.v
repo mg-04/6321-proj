@@ -148,7 +148,7 @@ module fft (
 		.dout1(x0_data), 
 		.dout2(x1_data)
 	);
-	sram_wrapper01 weight_mem (
+	sram_wrapper05 weight_mem (
 		.clk(clk),
 		.cen(weight_cen),           // Always 0 during FFT
 		.gwen(weight_gwen),         // 1 during FFT, 0 during Loading

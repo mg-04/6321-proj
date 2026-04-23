@@ -32,6 +32,7 @@ add wave -noupdate -radix hex /testbench/dut/sram_din1
 add wave -noupdate -radix hex /testbench/dut/sram_din2
 add wave -noupdate -radix hex /testbench/dut/x0_data
 add wave -noupdate -radix hex /testbench/dut/x1_data
+add wave -noupdate -radix hex /testbench/dut/actual_w_addr
 add wave -noupdate -radix hex /testbench/dut/twiddle_data
 
 add wave -divider "ALU Input Regs (Phase 1 Valid)"
