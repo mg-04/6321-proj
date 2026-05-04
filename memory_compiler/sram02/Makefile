@@ -7,8 +7,8 @@ INST_NAME = sram02
 OUT_DIR   = sram02_libs
 WORDS     = 1024
 BITS      = 32
-FREQ      = 500
-MUX       = 8
+FREQ      = 400
+MUX       = 4
 
 # Common flags used for all views
 FLAGS = -instname $(INST_NAME) -words $(WORDS) -bits $(BITS) -frequency $(FREQ) \
@@ -24,7 +24,7 @@ FLAGS = -instname $(INST_NAME) -words $(WORDS) -bits $(BITS) -frequency $(FREQ) 
 .PHONY: all sram db clean
 
 # Default target: generates all views and the .db file
-all: sram db
+all: clean sram db
 
 # Equivalent to run.sh: Generates all SRAM views
 sram:

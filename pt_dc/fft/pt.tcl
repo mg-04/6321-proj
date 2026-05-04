@@ -22,12 +22,15 @@ set search_path [list \
     "." \
     "/courses/ee6350/pdk2025/tcbn65gplus/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn65gplus_200a" \
     "/home/cad/installs/synopsys/syn/O-2018.06-SP5-1/libraries/syn" \
-    "../../memory_compiler/sram01/sram01_libs"\
+    "../../memory_compiler/sram05/sram05_libs"\
     "../../memory_compiler/sram02/sram02_libs"\
 ]
 
 # Specify a list of libraries, design files, and library files used during linking
-set link_path [list "*" "tcbn65gplustc_ccs.db" "sram01_nldm_tt_1p00v_1p00v_25c_syn.db" "sram02_nldm_tt_1p00v_1p00v_25c_syn.db"]
+set link_path [list "*" "tcbn65gplustc_ccs.db" \
+	"sram05_nldm_tt_1p00v_1p00v_25c_syn.db" \
+	"sram02_nldm_tt_1p00v_1p00v_25c_syn.db" \
+]
 
 # Read design or library files
 read_db [list "tcbn65gplustc_ccs.db"]

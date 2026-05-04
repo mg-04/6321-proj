@@ -1,8 +1,8 @@
 module fft (
 	input clk, rst, start,
-	input [1:0] mode,	// 00: IDLE, 01: CLOAD, 10: DLOAD, 11: DREAD
+	input [1:0] mode,	// 00: IDLE, 01: N/A, 10: DLOAD, 11: DREAD
 	input [9:0] mux_addr,
-	input signed [31:0] dcin1,
+	input signed [31:0] din1,
 	input signed [31:0] din2,
 	input [9:0] scale_mask,
 	output reg done,
@@ -10,24 +10,18 @@ module fft (
 	output reg [31:0] dout2
 );
 	// input unpacking
-	wire cload = (mode == 2'b01);
     wire dload = (mode == 2'b10);
     wire dread = (mode == 2'b11);
 
-	wire [8:0] caddr  = mux_addr[8:0];
     wire [9:0] daddr1 = mux_addr;
     wire [9:0] daddr2 = mux_addr + 1'b1;
 	// assume always reading parallel ports!
-
-	wire [31:0] cin  = dcin1[31:0];
-    wire [31:0] din1 = dcin1[31:0]; // Top 32 bits
 
 	// control states
 	localparam IDLE   = 4'd0,
                FFT_RUN = 4'd1,
 			   FFT_DRAIN = 4'd2,	// stop new reads, continue pipeline
                DONE   = 4'd5,
-			   CLOAD      = 4'd6,
 			   DLOAD      = 4'd7,
 			   DREAD      = 4'd8,	// prepare address
 			   DREAD_WAIT = 4'd9;	// data available
@@ -86,14 +80,12 @@ module fft (
 								(is_fft_write) ? addr_a_pipe[4] : addr_a;
 	wire [9:0] actual_addr_b = (state == DLOAD || state == DREAD) ? daddr2 : 
 								(is_fft_write) ? addr_b_pipe[4] : addr_b;
-	wire [8:0] actual_w_addr = (state == CLOAD) ? caddr : w_addr;
 
 	// memory control signals
-	wire data_cen = (state == IDLE || state == CLOAD) ? 1'b1 : 1'b0;
+	wire data_cen = (state == IDLE) ? 1'b1 : 1'b0;
 	wire data_gwen = (state == DLOAD) ? 1'b0 : 
 		(is_fft_write && valid_pipe[4]) ? 1'b0 : 1'b1;
 	wire weight_cen = (state == IDLE || state == DLOAD || state == DREAD) ? 1'b1 : 1'b0;
-	wire weight_gwen = (state == CLOAD) ? 1'b0 : 1'b1;
 
 	// ALU-memory data path
 	wire [31:0] x0_data, x1_data;       // Outputs from SRAM to ALU
@@ -102,6 +94,7 @@ module fft (
 	reg scale_reg;
 	wire [31:0] alu_out_X0, alu_out_X1; // Outputs from ALU
 
+	// memory output registers
 	always @(posedge clk) begin
 		if (state == FFT_RUN || state == FFT_DRAIN) begin
 			if (phase == 1) begin // SRAM read was requested on phase 0, valid now
@@ -151,9 +144,7 @@ module fft (
 	sram_wrapper05 weight_mem (
 		.clk(clk),
 		.cen(weight_cen),           // Always 0 during FFT
-		.gwen(weight_gwen),         // 1 during FFT, 0 during Loading
-		.addr(actual_w_addr), 
-		.din(cin), 
+		.addr(w_addr), 
 		.dout(twiddle_data)
 	);
 
@@ -185,13 +176,11 @@ module fft (
 			case (state)
 				IDLE: begin
 					done <= 0;
-					if (cload) begin
-						state <= CLOAD;
-					end else if (dload) begin
+					if (dload)
 						state <= DLOAD;
-					end else if (dread) begin
+					else if (dread)
 						state <= DREAD;
-					end else if (start) begin
+					else if (start) begin
 						state <= FFT_RUN;
 						stage_cnt <= 0;
 						bf_cnt <= 0;		// points at HEAD of pipeline
@@ -231,12 +220,6 @@ module fft (
 				DONE: begin
 					done <= 1;
 					state <= IDLE;
-				end
-
-				CLOAD: begin
-					if (!cload) begin
-						state <= IDLE;
-					end
 				end
 
 				DLOAD: begin

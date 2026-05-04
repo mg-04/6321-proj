@@ -4,12 +4,10 @@ Version: 2
 # SOUTH SIDE: All Inputs (Concentrated to the Right)
 # Offset starts at X=650 and moves toward X=1000
 # ===========================================================
-Offset: 400
-Spacing: 1.5
+Offset: 180
+Spacing: 1.8
 
 # Basic Controls
-Pin: clk S 4 0.1800 0.6000
-Pin: rst S 4 0.1800 0.6000
 Pin: start S 4 0.1800 0.6000
 Pin: mode[0] S 4 0.1800 0.6000
 Pin: mode[1] S 4 0.1800 0.6000
@@ -38,38 +36,38 @@ Pin: scale_mask[8] S 4 0.1800 0.6000
 Pin: scale_mask[9] S 4 0.1800 0.6000
 
 # Data Input Bus 1
-Pin: dcin1[0] S 4 0.1800 0.6000
-Pin: dcin1[1] S 4 0.1800 0.6000
-Pin: dcin1[2] S 4 0.1800 0.6000
-Pin: dcin1[3] S 4 0.1800 0.6000
-Pin: dcin1[4] S 4 0.1800 0.6000
-Pin: dcin1[5] S 4 0.1800 0.6000
-Pin: dcin1[6] S 4 0.1800 0.6000
-Pin: dcin1[7] S 4 0.1800 0.6000
-Pin: dcin1[8] S 4 0.1800 0.6000
-Pin: dcin1[9] S 4 0.1800 0.6000
-Pin: dcin1[10] S 4 0.1800 0.6000
-Pin: dcin1[11] S 4 0.1800 0.6000
-Pin: dcin1[12] S 4 0.1800 0.6000
-Pin: dcin1[13] S 4 0.1800 0.6000
-Pin: dcin1[14] S 4 0.1800 0.6000
-Pin: dcin1[15] S 4 0.1800 0.6000
-Pin: dcin1[16] S 4 0.1800 0.6000
-Pin: dcin1[17] S 4 0.1800 0.6000
-Pin: dcin1[18] S 4 0.1800 0.6000
-Pin: dcin1[19] S 4 0.1800 0.6000
-Pin: dcin1[20] S 4 0.1800 0.6000
-Pin: dcin1[21] S 4 0.1800 0.6000
-Pin: dcin1[22] S 4 0.1800 0.6000
-Pin: dcin1[23] S 4 0.1800 0.6000
-Pin: dcin1[24] S 4 0.1800 0.6000
-Pin: dcin1[25] S 4 0.1800 0.6000
-Pin: dcin1[26] S 4 0.1800 0.6000
-Pin: dcin1[27] S 4 0.1800 0.6000
-Pin: dcin1[28] S 4 0.1800 0.6000
-Pin: dcin1[29] S 4 0.1800 0.6000
-Pin: dcin1[30] S 4 0.1800 0.6000
-Pin: dcin1[31] S 4 0.1800 0.6000
+Pin: din1[0] S 4 0.1800 0.6000
+Pin: din1[1] S 4 0.1800 0.6000
+Pin: din1[2] S 4 0.1800 0.6000
+Pin: din1[3] S 4 0.1800 0.6000
+Pin: din1[4] S 4 0.1800 0.6000
+Pin: din1[5] S 4 0.1800 0.6000
+Pin: din1[6] S 4 0.1800 0.6000
+Pin: din1[7] S 4 0.1800 0.6000
+Pin: din1[8] S 4 0.1800 0.6000
+Pin: din1[9] S 4 0.1800 0.6000
+Pin: din1[10] S 4 0.1800 0.6000
+Pin: din1[11] S 4 0.1800 0.6000
+Pin: din1[12] S 4 0.1800 0.6000
+Pin: din1[13] S 4 0.1800 0.6000
+Pin: din1[14] S 4 0.1800 0.6000
+Pin: din1[15] S 4 0.1800 0.6000
+Pin: din1[16] S 4 0.1800 0.6000
+Pin: din1[17] S 4 0.1800 0.6000
+Pin: din1[18] S 4 0.1800 0.6000
+Pin: din1[19] S 4 0.1800 0.6000
+Pin: din1[20] S 4 0.1800 0.6000
+Pin: din1[21] S 4 0.1800 0.6000
+Pin: din1[22] S 4 0.1800 0.6000
+Pin: din1[23] S 4 0.1800 0.6000
+Pin: din1[24] S 4 0.1800 0.6000
+Pin: din1[25] S 4 0.1800 0.6000
+Pin: din1[26] S 4 0.1800 0.6000
+Pin: din1[27] S 4 0.1800 0.6000
+Pin: din1[28] S 4 0.1800 0.6000
+Pin: din1[29] S 4 0.1800 0.6000
+Pin: din1[30] S 4 0.1800 0.6000
+Pin: din1[31] S 4 0.1800 0.6000
 
 # Data Input Bus 2
 Pin: din2[0] S 4 0.1800 0.6000
@@ -109,8 +107,8 @@ Pin: din2[31] S 4 0.1800 0.6000
 # EAST SIDE: All Outputs (Concentrated to the Bottom)
 # Offset 20 starts 20um from the South edge and moves UP
 # ===========================================================
-Offset: 20
-Spacing: 1.5
+Offset: 14.6
+Spacing: 1.8
 
 Pin: done E 3 0.1800 0.6000
 
@@ -148,8 +146,12 @@ Pin: dout1[29] E 3 0.1800 0.6000
 Pin: dout1[30] E 3 0.1800 0.6000
 Pin: dout1[31] E 3 0.1800 0.6000
 
+# core controls
+Pin: clk E 3 0.1800 0.6000 Space: 3.6
+Pin: rst E 3 0.1800 0.6000
+
 # Data Output Bus 2
-Pin: dout2[0] E 3 0.1800 0.6000
+Pin: dout2[0] E 3 0.1800 0.6000 Space: 3.6
 Pin: dout2[1] E 3 0.1800 0.6000
 Pin: dout2[2] E 3 0.1800 0.6000
 Pin: dout2[3] E 3 0.1800 0.6000

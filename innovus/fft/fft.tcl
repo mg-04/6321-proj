@@ -22,8 +22,8 @@ init_design
 set std_cell_height 1.8
 # core_height should be a multiple of the std_cell_height
 # Need to iterate the core width and height to make the density close to 0.7
-set core_width 550
-set core_height [expr 180*$std_cell_height]
+set core_width 350
+set core_height [expr 240*$std_cell_height]
 
 set ring_left_width 1
 set ring_right_width 1
@@ -40,7 +40,7 @@ set ring_bottom_space 0.5
 ##################################################
 
 # Specify the floorplan dimensions by size; or by die, I/O, or core coordinates (Need modification)
-floorPlan -s $core_width $core_height 20 30 20 20
+floorPlan -s $core_width $core_height 10 10 10 10
 
 # GUI only
 redraw
@@ -51,31 +51,31 @@ fit
 ##################################################
 set sram05_w 148.715
 set sram05_h 98.875
-set sram02_w 560.7
-set sram02_h 148.23
+set sram02_w 316.22
+set sram02_h 254.145
 
 # sram05: bottom left (Snapped to 0.2 grid)
 set sram05_x 10
-set sram05_y [expr 20*$std_cell_height]
+set sram05_y [expr 5*$std_cell_height]
 
 # sram02: top left (Snapped to 0.2 grid)
 set sram02_x 10
-set sram02_y [expr 110*$std_cell_height]
+set sram02_y [expr 80*$std_cell_height]
 
 # Flip the top macro to MX to prevent pin routing shorts
 placeInstance weight_mem_sram05_inst $sram05_x $sram05_y MX -fixed
 placeInstance data_mem_sram02_inst $sram02_x $sram02_y R0 -fixed
 
 # add halo to avoid drc misalignment
-addHaloToBlock 3 3 3 3 weight_mem_sram05_inst
-addHaloToBlock 3 3 3 3 data_mem_sram02_inst
+addHaloToBlock 2 2 2 2 weight_mem_sram05_inst
+addHaloToBlock 2 2 2 2 data_mem_sram02_inst
 
 checkPlace
 redraw 
 fit
 
 createPlaceBlockage -box [expr $sram05_x-3.] [expr $sram05_y-3] \
-                         [expr $sram05_x+$sram05_w+3] [expr $sram05_y+$sram05_h+3]
+                         [expr $sram05_x+$sram05_h+3] [expr $sram05_y+$sram05_w+3]
 createPlaceBlockage -box [expr $sram02_x-3] [expr $sram02_y-3] \
                          [expr $sram02_x+$sram02_w+3] [expr $sram02_y+$sram02_h+3]
 #redraw
@@ -114,7 +114,7 @@ addStripe -block_ring_top_layer_limit M6 \
           -nets {VDD VSS} \
 	  -width 1 \
 	  -spacing 0.5 \
-	  -area [list 0 0 $core_width 800]
+	  -area [list 0 0 $core_width $core_height]
 
 sroute -nets {VDD VSS} -allowJogging 0 -allowLayerChange 0 -blockPinTarget boundaryWithPin
 

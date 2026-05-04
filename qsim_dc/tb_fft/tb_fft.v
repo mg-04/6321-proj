@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 `define SD #0.010
-`define HALF_CLOCK_PERIOD #1   // 500 MHz Clock
+`define HALF_CLOCK_PERIOD #1.25   // 400 MHz Clock
 `define QSIM_OUT_FN "./qsim_fft.out"
 `define TWIDDLE_FN  "../../matlab/FFT_input/twiddle_q15.hex" // 512 entries (all in 32-bit hex)
 `define INPUT_FN    "../../matlab/FFT_input/input_q1_15_v3.hex"   // 1024 entries x 10

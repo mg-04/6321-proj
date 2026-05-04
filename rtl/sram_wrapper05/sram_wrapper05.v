@@ -7,21 +7,15 @@ module sram_wrapper05 # (
 ) (
     input clk,
     input cen,
-    input gwen,
     input [AW-1:0] addr,
-    input [DW-1:0] din,			// not connected
     output [DW-1:0] dout
 );
 
     wire cen_delayed;
-    wire gwen_delayed;
     wire [AW-1:0] addr_delayed;
-    wire [DW-1:0] din_delayed;
    
     assign `DELAY cen_delayed = cen;
-    assign `DELAY gwen_delayed = gwen;
     assign `DELAY addr_delayed = addr;
-    assign `DELAY din_delayed = din;
 
     // wire [31:0] w_dout;
     // assign dout = w_dout[DW-1:0];

@@ -6,7 +6,7 @@
 # Setting variables
 # FO4 delay of the technology in nanosecond
 set fo4 0.02
-set clk_period [expr 100*$fo4] 
+set clk_period [expr 125*$fo4]; # 400 MHz
 
 # Create real clock if clock port is found
 set clk_name "clk"

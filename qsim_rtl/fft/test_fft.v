@@ -18,7 +18,7 @@ module testbench();
     reg clk, rst, start;
     reg [1:0] mode;
     reg [9:0]  mux_addr;
-    reg [31:0] dcin1;
+    reg [31:0] din1;
     reg [31:0] din2;
     
     wire done;
@@ -37,7 +37,7 @@ module testbench();
         .clk(clk), .rst(rst), .start(start),
         .mode(mode),
         .mux_addr(mux_addr),
-        .dcin1(dcin1), .din2(din2),
+        .din1(din1), .din2(din2),
         .scale_mask(`SCALE_MASK),
         .done(done), .dout1(dout1), .dout2(dout2)
     );
@@ -54,7 +54,7 @@ module testbench();
         // 1. Initialize
         rst = 0; start = 0; mode = 2'b00;
         mux_addr = 9'b0;
-        dcin1 = 0; din2 = 0; 
+        din1 = 0; din2 = 0; 
         
         open_files();
         
@@ -63,20 +63,11 @@ module testbench();
         rst = 1;
         repeat (2) @(posedge clk);
 
-        // 2. Load weights
-        $display("Loading 512 weights...");
-        mode <= 2'b01;		// CLOAD
-		@(posedge clk);     // sync
-        for (i = 0; i < W_POINTS; i = i + 1) begin
-            scan_ret = $fscanf(twiddle_file, "%h\n", val_in1);
-            @(negedge clk);
-            mux_addr <= i[9:0];
-            dcin1   <= val_in1;
-        end
-        @(negedge clk);
+        // 2. Load weights (no need!)
+        $display("Loading 512 weights (skipped)...");
         mode <= 2'b00;
 
-        // 1024 rounds of testing!!
+        // 10 rounds of testing!!
         for (test_idx = 0; test_idx < N_TESTS; test_idx = test_idx + 1) begin
             $display("--- Starting Test Case %0d/%0d ---", test_idx + 1, N_TESTS);
 
@@ -91,7 +82,7 @@ module testbench();
                 @(negedge clk);
                 mux_addr <= i[9:0];
                 //daddr2 <= i[9:0] + 1'b1;
-                dcin1 <= { val_in1[15:0], 16'b0 };        // imaginary parts is 0
+                din1 <= { val_in1[15:0], 16'b0 };        // imaginary parts is 0
                 din2  <= { val_in2[15:0], 16'b0 };
             end
             @(negedge clk);

@@ -6,7 +6,7 @@ PYTHON_BIN  = /courses/ee6350/pdk2025/miniconda3/bin/python
 .PHONY: all synth clean
 
 # Default target
-all: synth
+all: clean synth
 
 # Synthesis and Post-Processing
 synth:
