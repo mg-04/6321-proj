@@ -22,8 +22,8 @@ init_design
 set std_cell_height 1.8
 # core_height should be a multiple of the std_cell_height
 # Need to iterate the core width and height to make the density close to 0.7
-set core_width 350
-set core_height [expr 240*$std_cell_height]
+set core_width 318
+set core_height [expr 232*$std_cell_height]
 
 set ring_left_width 1
 set ring_right_width 1
@@ -60,10 +60,10 @@ set sram05_y [expr 5*$std_cell_height]
 
 # sram02: top left (Snapped to 0.2 grid)
 set sram02_x 10
-set sram02_y [expr 80*$std_cell_height]
+set sram02_y [expr 95*$std_cell_height]
 
 # Flip the top macro to MX to prevent pin routing shorts
-placeInstance weight_mem_sram05_inst $sram05_x $sram05_y MX -fixed
+placeInstance weight_mem_sram05_inst $sram05_x $sram05_y MX90 -fixed
 placeInstance data_mem_sram02_inst $sram02_x $sram02_y R0 -fixed
 
 # add halo to avoid drc misalignment
@@ -173,7 +173,7 @@ setOptMode -maxDensity 0.95 ; # Default is 0.95 (netlist won't grow above this v
 setOptMode -drcMargin 0.0 ; # Default is 0
 #setOptMode -holdTargetSlack 0.0 
 setOptMode -holdTargetSlack 0.05
-setOptMode -setupTargetSlack 0.0
+setOptMode -setupTargetSlack 0.05
 setOptMode -SimplifyNetlist false ; # When true, simplifies the netlist to decrease congestion, area, and improve runtime
 #clearClockDomains
 setOptMode -usefulSkew true
@@ -362,7 +362,7 @@ setOptMode -effort high
 # Notes: '-hold' option corrects hold violations
 #        '-postRoute' option performs timing optimization on a design whose routing is complete
 optDesign -postRoute -drv
-optDesign -postRoute -setup
+optDesign -postRoute -setup -incremental
 optDesign -postRoute -hold -incremental
 
 # Connect all new cells to VDD/GND

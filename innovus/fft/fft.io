@@ -4,8 +4,8 @@ Version: 2
 # SOUTH SIDE: All Inputs (Concentrated to the Right)
 # Offset starts at X=650 and moves toward X=1000
 # ===========================================================
-Offset: 180
-Spacing: 1.8
+Offset: 150
+Spacing: 2
 
 # Basic Controls
 Pin: start S 4 0.1800 0.6000
