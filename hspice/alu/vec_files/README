@@ -1,0 +1,26 @@
+Note: you can adjust the vector file/fscript commands to suit your need
+
+- about check_window in vector file
+  
+Check_Window
+Specifies the time window of the vector strobe that is defined as an output of the io
+statement. The output comparison is done within the time window.
+Syntax
+check_window begin_offset end_offset steady [mask_name]
+or:
+check_window begin_offset end_offset steady period_time first_time
+[mask_name]
+For the first syntax statement, the begin_offset and end_offset are the start and stop
+offset values, respectively. The default value and unit are 0 and ns. The time window is
+[t – begin_offset, t + end_offset], where "t" is the vector stop time. The steady
+can be defined as 1 or 0. If steady=1 and the unexpected output range or time exists in
+the check window, the result is an error. If steady=0 and the expected output range or
+time exists in the check window, the result is correct. If mask_name is specified, the check
+window is applied to the signals defined in the mask statement.
+For the second syntax statement, the begin_offset and end_offset are the same
+with the first example. The time window is [t – begin_offset, t + end_offset],
+where "t" is first_time. The check is repeated every period_time. The steady can be
+defined as 3 or 2. If steady=3 and the unexpected output range or time exists in the check
+window, the result is an error. If steady=2 and the expected output range or time exists
+in the check window, the result is correct. If mask_name is specified, the check window is
+applied to the signals defined in the mask statement.
