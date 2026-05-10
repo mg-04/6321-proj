@@ -1,6 +1,6 @@
 .PHONY: all clean
 
-all: clean test.mod.vec
+all: clean test.vec
 
 test.vec: vcd2vec.fscript.sp
 	/tools/synopsys/finesim/U-2023.03-SP2-2/bin/fscript vcd2vec.fscript.sp

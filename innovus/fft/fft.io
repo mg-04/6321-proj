@@ -12,7 +12,7 @@ Pin: start S 4 0.1800 0.6000
 Pin: mode[0] S 4 0.1800 0.6000
 Pin: mode[1] S 4 0.1800 0.6000
 
-# Mux & Scale Config
+# Address & Scale Config
 Pin: mux_addr[0] S 4 0.1800 0.6000
 Pin: mux_addr[1] S 4 0.1800 0.6000
 Pin: mux_addr[2] S 4 0.1800 0.6000

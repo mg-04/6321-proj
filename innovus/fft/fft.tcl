@@ -345,13 +345,13 @@ setAnalysisMode -analysisType onChipVariation -cppr both
 setOptMode -yieldEffort none
 setOptMode -effort high
 setOptMode -drcMargin 0.0
-setOptMode -maxDensity 0.95
+setOptMode -maxDensity 0.9
 setOptMode -holdTargetSlack 0.1 -setupTargetSlack 0.0
 setOptMode -holdFixingEffort high
 setOptMode -simplifyNetlist false
 setOptMode -usefulSkew true
 setOptMode -moveInst true
-setOptMode -reclaimArea true
+setOptMode -reclaimArea false
 setOptMode -fixDRC true
 setOptMode -fixCap true
 setOptMode -fixTran true     ;# Specifically for max_transition (CRITICAL)
