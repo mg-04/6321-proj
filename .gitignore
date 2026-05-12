@@ -142,6 +142,7 @@ hspice/*/tmp_*
 hspice/*/vec_files/*.vec
 hspice/*/vec_files/backup/*
 hspice/*/finesim_run/*
+hspice/*/hspice_run/*
 
 hspice/down_counter_PEX/
 hspice/inv/

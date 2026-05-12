@@ -19,7 +19,7 @@ module testbench();
     reg [1:0] mode;
     reg [9:0]  mux_addr;
     reg [31:0] din1;
-    reg [31:0] din2;
+    reg [31:0] din2;    
     
     wire done;
     wire [31:0] dout1;

@@ -4,14 +4,15 @@
 
 
 * General options
-.option POST=1          $ Output format is binary
+.option POST=2          $ Output format is binary
 .option PROBE=1
 .option MEASDGT=6
 .option NUMDGT=6
 .option DCSTEP=1
 .option INGOLD=2
 .option MEASOUT=1
-.option PSF=1           $ Comment out if you want to use the CSCOPE
+.option PFS=0
+* .option PSF=1           $ Comment out if you want to use the CSCOPE
 .option ARTIST=1
 .option CAPTAB
 .option REDEFSUB=1
@@ -37,6 +38,7 @@
 
 **** Measure and probe
 .probe v(*)
+.print tran v(clk) v(rst_n) v(X0r0[0]) v(X0r0[1]) v(X1r0[0])  
 
 **** Simulation setup
 .tran 20e-12 sim_time
